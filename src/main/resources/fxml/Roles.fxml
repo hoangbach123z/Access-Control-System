@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import javafx.geometry.Insets?>
+<?import io.github.palexdev.materialfx.controls.MFXTableView?>
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXPaginatedTableView?>
+
+<GridPane fx:id="gridPane" alignment="TOP_CENTER" prefHeight="707.0" prefWidth="1095.0" styleClass="grid-pane" stylesheets="@../css/Common.css" vgap="10.0" xmlns="http://javafx.com/javafx/21.0.5" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bachnh.accesscontrolsystem.controller.RolesController">
+    <columnConstraints>
+        <ColumnConstraints halignment="CENTER" minWidth="10.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints maxHeight="1.7976931348623157E308" minHeight="20.0" />
+        <RowConstraints />
+    </rowConstraints>
+    <padding>
+        <Insets bottom="20.0" left="30.0" right="30.0" top="20.0" />
+    </padding>
+    <MFXPaginatedTableView fx:id="paginated" pagesToShow="100" prefHeight="614.0" prefWidth="1011.0" rowsPerPage="15" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="TOP" GridPane.vgrow="ALWAYS">
+        <GridPane.margin>
+            <Insets />
+        </GridPane.margin>
+    </MFXPaginatedTableView>
+    <HBox alignment="CENTER_RIGHT" prefHeight="43.0" prefWidth="992.0">
+        <children>
+            <MFXButton fx:id="addRoleBtn" prefHeight="32.0" prefWidth="88.0" rippleColor="WHITE" style="-fx-background-color: #76c893; -fx-font-family: Open Sans Bold; -fx-text-fill: #ffffff; -fx-font-weight: bold;" text="Thêm mới" textFill="#fcfafa">
+                <HBox.margin>
+                    <Insets />
+                </HBox.margin>
+                <graphic>
+                    <FontIcon iconColor="WHITE" iconLiteral="fas-plus" />
+                </graphic>
+            </MFXButton>
+        </children>
+    </HBox>
+</GridPane>
+
