@@ -121,7 +121,7 @@ public class DashboardController implements Initializable {
 
                 // Load giao diện Dashboard từ file FXML
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/Login.fxml"));
-                fxmlLoader.setControllerFactory(c->new LoginController(stage));
+                fxmlLoader.setControllerFactory(c->new LoginController());
                 Parent root = fxmlLoader.load(); // Load file FXML và gán cho root
                 // Tạo scene mới
                 Scene scene = new Scene(root);
@@ -133,7 +133,7 @@ public class DashboardController implements Initializable {
         });
         initializeLoader();
         ScrollUtils.addSmoothScrolling(scrollPane);
-        Image image = new Image(MFXDemoResourcesLoader.load("/logo_qr.png"), 100, 100, true, true);
+        Image image = new Image(MFXDemoResourcesLoader.load("/assets/logo_qr.png"), 100, 100, true, true);
         ImageView logo = new ImageView(image);
         Circle clip = new Circle(50);
         clip.centerXProperty().bind(logo.layoutBoundsProperty().map(Bounds::getCenterX));

@@ -15,17 +15,21 @@ spring:
     driver-class-name: org.postgresql.Driver
     jpa:
       database-platform: org.hibernate.dialect.PostgreSQLDialect
-#      properties:
-#        hibernate:
-#          format_sql: true
-#          temp:
-#            use_jdbc_metadata_defaults: false
-#          jdbc:
-#            batch_size: 1000
-#            lob:
-#              non_contextual_creation: true
+      properties:
+        hibernate:
+          format_sql: true
+          temp:
+            use_jdbc_metadata_defaults: false
+          jdbc:
+            batch_size: 1000
+            lob:
+              non_contextual_creation: true
       show-sql: false
       hibernate:
         ddl-auto: update
   server:
     port: 9009
+
+argon2:
+  pepper: a2fe5908234dd6fc38489c3d171994e2b900199e7335f7b89e30913774257673
+  salt: f89d4db83f96be89fe7941139fde5290

@@ -18,7 +18,7 @@
          <children>
             <ImageView fitHeight="164.0" fitWidth="200.0" layoutX="40.0" layoutY="28.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../profile_default.png" />
+                  <Image url="@../assets/profile_default.png" />
                </image>
             </ImageView>
             <Label layoutX="79.0" layoutY="192.0" prefHeight="20.0" prefWidth="124.0" text="Họ và tên">
@@ -38,7 +38,7 @@
             </Label>
             <ImageView fitHeight="180.0" fitWidth="180.0" layoutX="32.0" layoutY="312.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../qrcode_default.jpg" />
+                  <Image url="@../assets/qrcode_default.jpg" />
                </image>
             </ImageView>
             <Line endX="1.0" endY="488.0" layoutX="239.0" layoutY="13.0" startX="3.0" startY="-13.0" stroke="#dddddd" />

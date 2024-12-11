@@ -18,7 +18,6 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeWriter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -67,7 +66,7 @@ public class QRCodeServiceImpl implements IQRCodeService {
                         request.getWidth(), request.getHeight() );
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 MatrixToImageWriter.writeToStream(bitMatrix, "PNG", baos);
-                BufferedImage icon = ImageIO.read(new ClassPathResource("icon.png").getInputStream());
+                BufferedImage icon = ImageIO.read(new ClassPathResource("assets/icon.png").getInputStream());
                 BufferedImage image = ImageIO.read(new ByteArrayInputStream(baos.toByteArray()));
                 BufferedImage combined =  new BufferedImage(500, 500, BufferedImage.TYPE_INT_ARGB);
                 Graphics graphics = combined.getGraphics();

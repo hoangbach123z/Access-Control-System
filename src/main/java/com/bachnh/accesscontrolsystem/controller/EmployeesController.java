@@ -71,7 +71,7 @@ public class EmployeesController implements Initializable {
         stateColumn.setRowCellFactory(device -> new MFXTableRowCell<>(Device::getState));
 
         // Thêm cột hành động
-        MFXTableColumn<Device> actionColumn = new MFXTableColumn<>("", false);
+        MFXTableColumn<Device> actionColumn = new MFXTableColumn<>("Actions", false);
         actionColumn.setRowCellFactory(device -> {
             return new MFXTableRowCell<>(device1 -> "") {
                 private HBox actionBox;

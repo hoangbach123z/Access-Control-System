@@ -9,6 +9,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -21,19 +22,58 @@ import static javafx.application.Application.launch;
 @SpringBootApplication
 public class AccessControlSystemApplication extends Application {
 
-//    private ConfigurableApplicationContext springBootContext;
-//    private Parent root;
-//    private FXMLLoader fxmlLoader;
-//    @Override
-//    public void init() throws Exception {
-//        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/Login.fxml"));
-////        fxmlLoader.setControllerFactory(springBootContext::getBean);
-//
-//    }
+    private ConfigurableApplicationContext springBootContext;
+    private Parent root;
+    private FXMLLoader fxmlLoader;
+    @Override
+    public void init() throws Exception {
+        CSSFX.start();
+        UserAgentBuilder.builder()
+                .themes(JavaFXThemes.CASPIAN)
+                .themes(MaterialFXStylesheets.forAssemble(true))
+                .setDeploy(true)
+                .setResolveAssets(true)
+                .build()
+                .setGlobal();
+        springBootContext = SpringApplication.run(AccessControlSystemApplication.class);
+        fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/Login.fxml"));
+        fxmlLoader.setControllerFactory(springBootContext::getBean);
+    }
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+//        fxmlLoader.setControllerFactory(c->new LoginController());
+        root = fxmlLoader.load();
+        Scene scene = new Scene(root);
+        scene.setFill(Color.WHITE);
+        primaryStage.initStyle(StageStyle.TRANSPARENT);
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Đăng Nhập");
+        primaryStage.getIcons().add(new Image("/assets/icon.png"));
+        primaryStage.show();
+    }
+    @Override
+    public void stop() throws Exception {
+        springBootContext.stop();
+    }
+    public static void main(String[] args) {
+
+        launch(AccessControlSystemApplication.class,args);
+    }
 //    @Override
 //    public void start(Stage primaryStage) throws Exception {
+////        var context =  SpringApplication.run(AccessControlSystemApplication.class);
+////        CSSFX.start();
+////        UserAgentBuilder.builder()
+////                .themes(JavaFXThemes.CASPIAN)
+////                .themes(MaterialFXStylesheets.forAssemble(true))
+////                .setDeploy(true)
+////                .setResolveAssets(true)
+////                .build()
+////                .setGlobal();
+//
+//        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/Login.fxml"));
 //        fxmlLoader.setControllerFactory(c->new LoginController(primaryStage));
-//        root = fxmlLoader.load();
+//        Parent root = fxmlLoader.load();
 //        Scene scene = new Scene(root);
 //        scene.setFill(Color.WHITE);
 //        primaryStage.initStyle(StageStyle.TRANSPARENT);
@@ -41,35 +81,5 @@ public class AccessControlSystemApplication extends Application {
 //        primaryStage.setTitle("Đăng Nhập");
 //        primaryStage.show();
 //    }
-//    @Override
-//    public void stop() throws Exception {
-//        springBootContext.stop();
-//    }
-    public static void main(String[] args) {
-
-        launch(AccessControlSystemApplication.class,args);
-    }
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-//        var context =  SpringApplication.run(AccessControlSystemApplication.class);
-//        CSSFX.start();
-//        UserAgentBuilder.builder()
-//                .themes(JavaFXThemes.CASPIAN)
-//                .themes(MaterialFXStylesheets.forAssemble(true))
-//                .setDeploy(true)
-//                .setResolveAssets(true)
-//                .build()
-//                .setGlobal();
-
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/Login.fxml"));
-        fxmlLoader.setControllerFactory(c->new LoginController(primaryStage));
-        Parent root = fxmlLoader.load();
-        Scene scene = new Scene(root);
-        scene.setFill(Color.WHITE);
-        primaryStage.initStyle(StageStyle.TRANSPARENT);
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Đăng Nhập");
-        primaryStage.show();
-    }
 
 }
