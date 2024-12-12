@@ -13,10 +13,10 @@ import java.security.SecureRandom;
 
 public class BCryptUtils {
 //    @Value("${argon2.pepper}")
-//     String pepper ;
+//     String  pepper ;
 //    @Value("${argon2.salt}")
 //     String salt ;
-//    public String hashPassword(String password) {
+//    public static String hashPassword(String password) {
 //        Argon2Function argon2 = Argon2Function.getInstance(14, 20, 1, 32, Argon2.ID);
 //        Hash hash = Password.hash(password)
 //                .addPepper(pepper)
@@ -25,7 +25,7 @@ public class BCryptUtils {
 //
 //       return hash.getResult();
 //    }
-//    public  boolean verifiedPassword(String password,String hash) {
+//    public static boolean verifiedPassword(String password,String hash) {
 //        Argon2Function argon2 = Argon2Function.getInstance(14, 20, 1, 32, Argon2.ID);
 //
 //        boolean verified = Password.check(password, hash)

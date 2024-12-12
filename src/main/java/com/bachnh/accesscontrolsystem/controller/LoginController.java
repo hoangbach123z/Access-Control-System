@@ -165,7 +165,6 @@ public class LoginController implements Initializable {
     }
     public  boolean verifiedPassword(String password,String hash) {
         Argon2Function argon2 = Argon2Function.getInstance(14, 20, 1, 32, Argon2.ID);
-
         boolean verified = Password.check(password, hash)
                 .addPepper(pepper)
                 .with(argon2);
