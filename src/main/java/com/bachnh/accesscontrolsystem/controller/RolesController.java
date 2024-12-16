@@ -22,7 +22,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
@@ -41,7 +41,7 @@ public class RolesController implements Initializable {
     @FXML
     private MFXPaginatedTableView<Device> paginated;
     @FXML
-    private GridPane gridPane;
+    private BorderPane borderPane;
     @FXML
     private MFXButton addRoleBtn;
     @Override
@@ -109,7 +109,7 @@ public class RolesController implements Initializable {
                         deleteIcon.setStyle("-fx-cursor: hand;");
                         deleteIcon.setColor(Color.RED);
                         deleteIcon.setOnMouseClicked(event -> {
-                            Stage currentStage = (Stage) gridPane.getScene().getWindow();
+                            Stage currentStage = (Stage) borderPane.getScene().getWindow();
                             MFXFontIcon warnIcon = new MFXFontIcon("fas-circle-exclamation", 18);
                             warnIcon.setColor(Color.RED);
                             MFXGenericDialog dialogContent = MFXGenericDialogBuilder.build()
@@ -124,7 +124,7 @@ public class RolesController implements Initializable {
                                     .initModality(Modality.APPLICATION_MODAL)
                                     .setDraggable(true)
 //                                    .setTitle("Xác nhận xóa")
-                                    .setOwnerNode(gridPane)
+                                    .setOwnerNode(borderPane)
                                     .setScrimPriority(ScrimPriority.WINDOW)
                                     .setScrimOwner(true)
                                     .get();

@@ -21,6 +21,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -40,7 +41,7 @@ public class GuestsController implements Initializable {
     @FXML
     private MFXPaginatedTableView<Device> paginated;
     @FXML
-    private GridPane gridPane;
+    private BorderPane gridPane;
     @FXML
     private MFXButton addGuestBtn;
     @Override

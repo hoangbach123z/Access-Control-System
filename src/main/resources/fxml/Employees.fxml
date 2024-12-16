@@ -8,7 +8,7 @@
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
 
-<BorderPane prefHeight="667.0" prefWidth="1026.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bachnh.accesscontrolsystem.controller.EmployeesController">
+<BorderPane fx:id="borderPane" prefHeight="667.0" prefWidth="1026.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bachnh.accesscontrolsystem.controller.EmployeesController">
    <center>
       <MFXPaginatedTableView fx:id="paginated" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" pagesToShow="100" rowsPerPage="15" />
    </center>
