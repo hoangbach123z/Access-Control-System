@@ -1,0 +1,55 @@
+/* Tổng thể phần tử MFXPagination */
+/*.mfx-pagination {*/
+/*    -fx-background-color: #f4f4f4; !* Màu nền *!*/
+/*    -fx-border-color: #dcdcdc; !* Màu viền *!*/
+/*    -fx-border-radius: 5px; !* Góc bo viền *!*/
+/*    -fx-padding: 5px; !* Khoảng cách bên trong *!*/
+/*}*/
+
+/*!* Container của mũi tên trái/phải *!*/
+/*.mfx-pagination .mfx-icon-wrapper {*/
+/*    -fx-background-color: #ffffff; !* Màu nền container *!*/
+/*    -fx-border-color: #cccccc; !* Màu viền container *!*/
+/*    -fx-border-radius: 50%; !* Làm tròn container thành hình tròn *!*/
+/*    -fx-padding: 5px;*/
+/*}*/
+
+/*!* Hiệu ứng ripple khi nhấn vào mũi tên trái/phải *!*/
+/*.mfx-pagination .mfx-icon-wrapper .mfx-ripple-generator {*/
+/*    -fx-background-color: rgba(0, 0, 0, 0.1); !* Màu hiệu ứng ripple *!*/
+/*}*/
+
+/*!* Mũi tên trái/phải (FontIcon) *!*/
+/*.mfx-pagination .mfx-icon-wrapper .mfx-font-icon {*/
+/*    -fx-fill: #007bff; !* Màu mũi tên *!*/
+/*    -fx-font-size: 18px; !* Kích thước mũi tên *!*/
+/*}*/
+
+/*!* Thanh chứa các nút trang *!*/
+/*.mfx-pagination .pages-bar {*/
+/*    -fx-background-color: #f9f9f9; !* Màu nền của thanh chứa *!*/
+/*    -fx-spacing: 5px; !* Khoảng cách giữa các nút *!*/
+/*    -fx-padding: 5px;*/
+/*}*/
+
+/*!* Nút trang *!*/
+/*.mfx-pagination .pages-bar .mfx-page {*/
+/*    -fx-background-color: #ffffff; !* Màu nền của nút *!*/
+/*    -fx-border-color: #cccccc; !* Màu viền *!*/
+/*    -fx-border-radius: 5px; !* Góc bo của nút *!*/
+/*    -fx-text-fill: #333333; !* Màu chữ *!*/
+/*    -fx-font-size: 14px;*/
+/*    -fx-padding: 5px 10px; !* Khoảng cách bên trong *!*/
+/*}*/
+
+/*!* Nút trang khi được chọn *!*/
+.mfx-pagination .pages-bar .mfx-page:selected {
+    -fx-background-color: #0c969c; /* Màu nền khi được chọn */
+    -fx-text-fill: #ffffff; /* Màu chữ khi được chọn */
+}
+
+/* Nút trang khi di chuột */
+/*.mfx-pagination .pages-bar .mfx-page:hover {*/
+/*    -fx-background-color: #eeeeee; !* Màu nền khi di chuột *!*/
+/*    -fx-text-fill: #000000; !* Màu chữ khi di chuột *!*/
+/*}*/

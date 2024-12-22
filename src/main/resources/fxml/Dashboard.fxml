@@ -8,12 +8,11 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<AnchorPane fx:id="rootPane" prefHeight="720.0" prefWidth="1280.0" styleClass="rootPane" stylesheets="@../css/Dashboard.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bachnh.accesscontrolsystem.controller.DashboardController">
-   <HBox fx:id="windowHeader" alignment="CENTER_RIGHT" layoutY="6.0" prefHeight="50.0" prefWidth="1281.0" spacing="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+<AnchorPane fx:id="rootPane" prefHeight="720.0" prefWidth="1280.0" styleClass="rootPane" stylesheets="@../css/Dashboard.css" xmlns="http://javafx.com/javafx/21.0.5" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bachnh.accesscontrolsystem.controller.DashboardController">
+   <HBox fx:id="windowHeader" alignment="CENTER_RIGHT" layoutX="255.0" layoutY="2.0" prefHeight="50.0" prefWidth="1025.0" spacing="25.0" AnchorPane.leftAnchor="254.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="0.0">
       <padding>
          <Insets right="10.0" />
       </padding>
@@ -22,38 +21,41 @@
       <FontIcon fx:id="closeIcon" iconLiteral="fas-window-close" iconSize="15" styleClass="close-icon" />
 
    </HBox>
-   <VBox alignment="CENTER" layoutX="227.0" layoutY="51.0" prefWidth="250.0" styleClass="sidebar" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+   <VBox alignment="BOTTOM_CENTER" layoutX="227.0" layoutY="51.0" maxHeight="1.7976931348623157E308" prefWidth="250.0" styleClass="sidebar" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
       <padding>
-         <Insets bottom="10.0" left="10.0" top="60.0" />
+         <Insets bottom="10.0" left="10.0" />
       </padding>
-      <Label graphicTextGap="15.0" styleClass="header">
+      <Label graphicTextGap="15.0" prefHeight="33.0" prefWidth="0.0" styleClass="header">
          <graphic>
             <StackPane fx:id="logoContainer" />
          </graphic>
-      </Label>
-      <Label styleClass="menu-label">
          <VBox.margin>
-            <Insets left="5.0" top="40.0" />
+            <Insets bottom="40.0" top="30.0" />
          </VBox.margin>
       </Label>
-      <MFXScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" prefHeight="488.0" prefWidth="233.0">
+      <MFXScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" prefHeight="488.0" prefWidth="233.0">
          <VBox.margin>
             <Insets bottom="10.0" left="5.0" top="15.0" />
          </VBox.margin>
          <padding>
             <Insets right="10.0" />
          </padding>
-         <VBox fx:id="navBar" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="5.0" styleClass="navbar" />
+         <VBox fx:id="navBar" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="225.0" spacing="5.0" styleClass="navbar">
+            <padding>
+               <Insets top="50.0" />
+            </padding></VBox>
       </MFXScrollPane>
-      <MFXButton fx:id="signoutIcon" style="-fx-background-color:  #0C969C; -fx-text-fill: #ffffff; -fx-font-family: Open Sans Bold; -fx-font-size: 15; -fx-font-weight: bold;" text="Đăng xuất">
+      <MFXButton fx:id="signoutIcon" style="-fx-background-color: #0C969C; -fx-text-fill: #ffffff; -fx-font-family: Nunito; -fx-font-size: 16; -fx-font-weight: bold;" stylesheets="@../fonts/Fonts.css" text="Đăng xuất">
          <graphic>
             <FontIcon iconColor="WHITE" iconLiteral="fas-sign-out-alt" iconSize="24" />
          </graphic>
          <font>
             <Font size="14.0" />
          </font>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
       </MFXButton>
    </VBox>
    <StackPane fx:id="contentPane" layoutX="262.0" layoutY="61.0" prefHeight="667.0" prefWidth="1026.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="262.0" AnchorPane.rightAnchor="9.0" AnchorPane.topAnchor="61.0" />
-   <Line endX="1534.29296875" endY="51.0" startX="257.0" startY="52.0" stroke="#0c969c" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
 </AnchorPane>

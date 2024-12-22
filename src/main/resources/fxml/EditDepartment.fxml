@@ -11,7 +11,7 @@
 <?import io.github.palexdev.materialfx.controls.MFXButton?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.paint.Color?>
-<AnchorPane prefHeight="332.0" prefWidth="400.0" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bachnh.accesscontrolsystem.controller.EditDepartmentController">
+<AnchorPane prefHeight="332.0" prefWidth="400.0" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/21.0.5" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bachnh.accesscontrolsystem.controller.EditDepartmentController">
     <children>
         <Label layoutX="14.0" layoutY="14.0" style="-fx-font-weight: bold; -fx-font-size: 16px;" text="Sửa phòng ban">
             <font>

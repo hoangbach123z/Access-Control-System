@@ -22,6 +22,10 @@
 /**************************************************
  * Root
 **************************************************/
+@font-face {
+    font-family: 'Nunito';
+    src: url("/fonts/Nunito-VariableFont_wght.ttf");
+}
 .rootPane {
     -fx-background-color: white;
     -fx-background-radius: 10;

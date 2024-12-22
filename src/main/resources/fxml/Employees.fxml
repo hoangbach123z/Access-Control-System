@@ -1,29 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import io.github.palexdev.materialfx.controls.MFXButton?>
-<?import io.github.palexdev.materialfx.controls.MFXPaginatedTableView?>
+<?import io.github.palexdev.materialfx.controls.MFXPagination?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-
-<BorderPane fx:id="borderPane" prefHeight="667.0" prefWidth="1026.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bachnh.accesscontrolsystem.controller.EmployeesController">
-   <center>
-      <MFXPaginatedTableView fx:id="paginated" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" pagesToShow="100" rowsPerPage="15" />
-   </center>
-   <top>
-      <HBox alignment="CENTER_RIGHT" prefHeight="43.0" prefWidth="992.0" BorderPane.alignment="CENTER">
-         <children>
-            <MFXButton fx:id="addEmployeeBtn" prefHeight="41.0" prefWidth="105.0" rippleColor="WHITE" style="-fx-background-color:  #008001; -fx-font-family: Open Sans Bold; -fx-text-fill: #ffffff; -fx-font-weight: bold;" text="Thêm mới" textFill="#fcfafa">
-               <HBox.margin>
-                  <Insets />
-               </HBox.margin>
-               <graphic>
-                  <FontIcon iconColor="WHITE" iconLiteral="fas-plus" />
-               </graphic>
-            </MFXButton>
-         </children>
-      </HBox>
-   </top>
+<BorderPane fx:id="borderPane" prefHeight="667.0" prefWidth="1026.0" xmlns="http://javafx.com/javafx/21.0.5" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bachnh.accesscontrolsystem.controller.EmployeesController">
+<top>
+   <HBox alignment="CENTER_RIGHT" prefHeight="43.0" prefWidth="992.0" BorderPane.alignment="CENTER">
+      <children>
+         <MFXButton fx:id="addEmployeeBtn" prefHeight="41.0" prefWidth="105.0" rippleColor="WHITE" style="-fx-background-color:  #008001; -fx-font-family: Open Sans Bold; -fx-text-fill: #ffffff; -fx-font-weight: bold;" text="Thêm mới" textFill="#fcfafa">
+            <HBox.margin>
+               <Insets />
+            </HBox.margin>
+            <graphic>
+               <FontIcon iconColor="WHITE" iconLiteral="fas-plus" />
+            </graphic>
+         </MFXButton>
+      </children>
+   </HBox>
+</top>
+<center>
+   <HBox fx:id="tableContainer" style="-fx-background-color: #ffffff; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 5,0,0,0); -fx-background-radius: 5px;">
+      <children>
+         <TableView fx:id="fixedFirstTable" maxHeight="1.7976931348623157E308" maxWidth="210.0" minWidth="210.0" prefHeight="624.0" prefWidth="210.0" styleClass="column-header" stylesheets="@../css/TableView.css">
+            <columnResizePolicy>
+               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+            <HBox.margin>
+               <Insets bottom="12.0" />
+            </HBox.margin>
+         </TableView>
+         <TableView id="scrollableTable" fx:id="scrollableTable" layoutX="10.0" layoutY="10.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="624.0" prefWidth="678.0" styleClass="column-header" stylesheets="@../css/TableView.css" HBox.hgrow="ALWAYS">
+            <columnResizePolicy>
+               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+         </TableView>
+         <TableView id="fixedLastTable" fx:id="fixedLastTable" layoutX="291.0" layoutY="10.0" maxHeight="1.7976931348623157E308" maxWidth="120.0" minWidth="120.0" prefHeight="624.0" prefWidth="771.0" styleClass="column-header" stylesheets="@../css/TableView.css">
+            <columnResizePolicy>
+               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+            <HBox.margin>
+               <Insets bottom="12.0" />
+            </HBox.margin>
+         </TableView>
+      </children>
+   </HBox>
+</center>
+<bottom>
+   <HBox alignment="CENTER" prefHeight="62.0" prefWidth="1026.0" BorderPane.alignment="CENTER">
+      <children>
+         <MFXPagination fx:id="paginator" stylesheets="@../css/Pagination.css" />
+      </children>
+   </HBox>
+</bottom>
 </BorderPane>

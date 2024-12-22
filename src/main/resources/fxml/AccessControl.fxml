@@ -6,14 +6,12 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
-
-
-<BorderPane fx:id="borderPane" prefHeight="667.0" prefWidth="1026.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bachnh.accesscontrolsystem.controller.AccessControlController">
-   <center>
-      <MFXPaginatedTableView fx:id="paginated" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" nodeOrientation="LEFT_TO_RIGHT" rowsPerPage="15" />
-   </center>
+<?import javafx.scene.control.TableView?>
+<?import javafx.geometry.Insets?>
+<?import io.github.palexdev.materialfx.controls.MFXPagination?>
+<BorderPane fx:id="borderPane" prefHeight="667.0" prefWidth="1026.0" xmlns="http://javafx.com/javafx/21.0.5" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bachnh.accesscontrolsystem.controller.AccessControlController">
    <top>
-      <HBox alignment="CENTER_RIGHT" BorderPane.alignment="CENTER">
+      <HBox alignment="CENTER_RIGHT" prefHeight="43.0" prefWidth="992.0" BorderPane.alignment="CENTER">
          <children>
             <MFXButton fx:id="scanQrBtn" prefHeight="41.0" prefWidth="105.0" style="-fx-background-color: #008001; -fx-text-fill: #ffffff;" text="Quét mã" HBox.hgrow="ALWAYS">
                <graphic>
@@ -26,4 +24,38 @@
          </children>
       </HBox>
    </top>
+   <center>
+      <HBox fx:id="tableContainer" style="-fx-background-color: #ffffff; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 5,0,0,0); -fx-background-radius: 5px;">
+         <children>
+            <TableView fx:id="fixedFirstTable" maxHeight="1.7976931348623157E308" maxWidth="210.0" minWidth="210.0" prefHeight="624.0" prefWidth="210.0" styleClass="column-header" stylesheets="@../css/TableView.css">
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+               <HBox.margin>
+                  <Insets bottom="12.0" />
+               </HBox.margin>
+            </TableView>
+            <TableView id="scrollableTable" fx:id="scrollableTable" layoutX="10.0" layoutY="10.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="624.0" prefWidth="678.0" styleClass="column-header" stylesheets="@../css/TableView.css" HBox.hgrow="ALWAYS">
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+            </TableView>
+            <TableView id="fixedLastTable" fx:id="fixedLastTable" layoutX="291.0" layoutY="10.0" maxHeight="1.7976931348623157E308" maxWidth="120.0" minWidth="120.0" prefHeight="624.0" prefWidth="771.0" styleClass="column-header" stylesheets="@../css/TableView.css">
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+               <HBox.margin>
+                  <Insets bottom="12.0" />
+               </HBox.margin>
+            </TableView>
+         </children>
+      </HBox>
+   </center>
+   <bottom>
+      <HBox alignment="CENTER" prefHeight="62.0" prefWidth="1026.0" BorderPane.alignment="CENTER">
+         <children>
+            <MFXPagination fx:id="paginator" stylesheets="@../css/Pagination.css" />
+         </children>
+      </HBox>
+   </bottom>
 </BorderPane>

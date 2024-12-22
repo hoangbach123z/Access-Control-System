@@ -1,0 +1,127 @@
+/* Table container */
+@font-face {
+    font-family: 'Nunito';
+    src: url("/fonts/Nunito-VariableFont_wght.ttf");
+}
+.table-view {
+    -fx-background-color: #f8f9fa;
+    -fx-table-cell-border-color: transparent;
+    -fx-padding: 0 0 0 0;
+    -fx-font-family: Nunito;
+    -fx-border-width: 0;
+    /*-fx-border-radius: 10;*/
+    /*-fx-border-insets: 5;*/
+
+}
+.table-view .column-header {
+    -fx-border-width: 0;
+    -fx-pref-height: 40px;
+
+}
+/* Header row styling */
+.table-view .column-header .label{
+    -fx-background-color: #0c969c; /* Green header background */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    /*-fx-label-padding: 15px;*/
+
+    -fx-border-color: #0a7075;
+    -fx-alignment: center;
+
+}
+
+/* Table cells styling */
+.table-view .table-cell {
+    -fx-font-size: 14px;
+    -fx-padding: 5px;
+    -fx-alignment: center;
+    /*-fx-cell-size: 20px;*/
+    -fx-border-width: 0.3 0.3 0 0.3;
+    -fx-border-color: #dee2e6;
+}
+/* Row borders */
+.table-view .table-row-cell {
+    -fx-border-width: 0.5 0.5 0.5 0.5; /* Bottom border only */
+    -fx-border-color: #dee2e6; /* Light gray border */
+    -fx-background-color: #ffffff;
+    -fx-cell-size: 30px;
+}
+
+/* Hover effect */
+.table-view .table-row-cell:hover {
+    -fx-background-color: #e9ecef; /* Light hover background */
+}
+
+/* Selected row styling */
+.table-view .table-row-cell:selected {
+    -fx-background-color: #cce5ff; /* Blue for selection */
+    -fx-text-fill: #212529;
+}
+
+.table-view .table-row-cell:empty {
+    -fx-background-color: #ffffff;
+    -fx-border-width: 0; /* Bottom border only */
+    -fx-border-color: #dee2e6; /* Light gray border */
+}
+
+.table-row-cell:empty .table-cell {
+    -fx-border-width: 0px;
+}
+.list-cell:empty {
+    -fx-background-color: white;
+}
+#fixedFirstTable .scroll-bar:vertical,
+#scrollableTable .scroll-bar:vertical
+{
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+    -fx-max-width: 0;
+    -fx-min-width: 0;
+}
+/*#fixedFirstTable .table-view {*/
+/*    -fx-padding: 0 0 17 0;*/
+/*}*/
+/*#scrollableTable .scroll-bar:horizontal {*/
+/*    -fx-opacity: 0;*/
+/*    -fx-pref-height: 0;*/
+/*    -fx-max-height: 0;*/
+/*    -fx-min-height: 0;*/
+/*}*/
+/* ScrollPane Styling */
+.scroll-pane {
+    -fx-background-color: transparent; /* Nền của ScrollPane */
+    -fx-padding: 0 0 0 0; /* Khoảng cách bên trong */
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: #ffffff; /* Màu nền của vùng nhìn thấy */
+}
+
+.scroll-pane .scroll-bar:horizontal {
+    -fx-background-color: transparent; /* Nền thanh cuộn ngang */
+}
+
+/*.scroll-pane .scroll-bar:vertical {*/
+/*    -fx-background-color: transparent; !* Nền thanh cuộn dọc *!*/
+/*}*/
+
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-padding: 3; /* Loại bỏ padding của các nút cuộn */
+    -fx-background-color: #e6e5e5;
+}
+
+.scroll-bar .track {
+    -fx-background-color: #e0e0e0; /* Nền của track (đường trượt) */
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #acafaf; /* Màu của nút trượt */
+    -fx-background-radius: 5; /* Làm tròn góc của thumb */
+    -fx-pref-height: 10; /* Chiều cao thumb */
+}
+
+
+
+

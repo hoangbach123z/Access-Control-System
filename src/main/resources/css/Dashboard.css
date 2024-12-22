@@ -1,5 +1,7 @@
+
 @import '../fonts/Fonts.css';
 @import 'MFXColors.css';
+
 
 /**************************************************
  * Root
@@ -85,8 +87,9 @@
     -fx-border-radius: 0;
     -fx-pref-height: 40;
 
-    -fx-font-family: 'Open Sans SemiBold';
-    -fx-font-size: 13;
+    -fx-font-family: 'Nunito';
+    -fx-font-size: 15;
+    -fx-font-weight: bold;
     -fx-text-fill: white;
 }
 
