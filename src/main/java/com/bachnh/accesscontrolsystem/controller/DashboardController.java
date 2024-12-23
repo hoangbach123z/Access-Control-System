@@ -4,13 +4,11 @@ package com.bachnh.accesscontrolsystem.controller;
 import com.bachnh.accesscontrolsystem.MFXDemoResourcesLoader;
 import com.bachnh.accesscontrolsystem.data.ViewData;
 import fr.brouillard.oss.cssfx.CSSFX;
-import io.github.palexdev.materialfx.controls.MFXButton;
-import io.github.palexdev.materialfx.controls.MFXIconWrapper;
-import io.github.palexdev.materialfx.controls.MFXRectangleToggleNode;
-import io.github.palexdev.materialfx.controls.MFXScrollPane;
+import io.github.palexdev.materialfx.controls.*;
 import io.github.palexdev.materialfx.theming.JavaFXThemes;
 import io.github.palexdev.materialfx.theming.MaterialFXStylesheets;
 import io.github.palexdev.materialfx.theming.UserAgentBuilder;
+import io.github.palexdev.materialfx.theming.base.Theme;
 import io.github.palexdev.materialfx.utils.ScrollUtils;
 import io.github.palexdev.materialfx.utils.ToggleButtonsUtil;
 import io.github.palexdev.materialfx.utils.others.loader.MFXLoader;
@@ -21,8 +19,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
@@ -47,49 +47,35 @@ import static com.bachnh.accesscontrolsystem.MFXDemoResourcesLoader.loadURL;
 
 public class DashboardController implements Initializable {
     private final Stage stage;
-    private double xOffset;
-    private double yOffset;
-    private final ToggleGroup toggleGroup;
-    private static final int LOGO_SIZE = 100;
-    private static final int CLIP_RADIUS = 50;
-    private static final int ICON_SIZE = 24;
-    private static final int WRAPPER_SIZE = 32;
+    private double xOffset, yOffset;
+    private final ToggleGroup toggleGroup = new ToggleGroup();
+    private final Map<String, Parent> viewCache = new HashMap<>();
+    private final ExecutorService executorService = Executors.newCachedThreadPool();
 
     @FXML private HBox windowHeader;
-    @FXML private FontIcon closeIcon;
-    @FXML private FontIcon minimizeIcon;
-    @FXML private FontIcon maximizeIcon;
+    @FXML private FontIcon closeIcon, minimizeIcon, maximizeIcon;
     @FXML private MFXButton signoutIcon;
     @FXML private AnchorPane rootPane;
     @FXML private MFXScrollPane scrollPane;
     @FXML private VBox navBar;
-    @FXML private StackPane contentPane;
-    @FXML private StackPane logoContainer;
-
-    // Cache thường xuyên sử dụng
-    private final Map<String, Parent> viewCache = new HashMap<>();
-    private final ExecutorService executorService = Executors.newCachedThreadPool();
+    @FXML private StackPane contentPane, logoContainer;
 
     public DashboardController(Stage stage) {
         this.stage = stage;
-        this.toggleGroup = new ToggleGroup();
         initializeUI();
     }
 
     private void initializeUI() {
         ToggleButtonsUtil.addAlwaysOneSelectedSupport(toggleGroup);
-
-
-        // Khởi tạo CSSFX và UserAgent một lần
         Platform.runLater(() -> {
             CSSFX.start();
-            UserAgentBuilder.builder()
-                    .themes(JavaFXThemes.CASPIAN)
-                    .themes(MaterialFXStylesheets.forAssemble(true))
-                    .setDeploy(true)
-                    .setResolveAssets(true)
-                    .build()
-                    .setGlobal();
+        UserAgentBuilder.builder()
+                .themes(JavaFXThemes.CASPIAN)
+                .themes(MaterialFXStylesheets.forAssemble(true))
+                .setDeploy(true)
+                .setResolveAssets(true)
+                .build()
+                .setGlobal();
         });
     }
 
@@ -103,15 +89,9 @@ public class DashboardController implements Initializable {
 
     private void initializeWindowControls() {
         closeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> Platform.exit());
-        minimizeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED,
-                event -> ((Stage) rootPane.getScene().getWindow()).setIconified(true));
+        minimizeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> stage.setIconified(true));
+        maximizeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> stage.setMaximized(!stage.isMaximized()));
 
-        maximizeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            Stage stage = (Stage) rootPane.getScene().getWindow();
-            stage.setMaximized(!stage.isMaximized());
-        });
-
-        // Window dragging
         windowHeader.setOnMousePressed(event -> {
             xOffset = stage.getX() - event.getScreenX();
             yOffset = stage.getY() - event.getScreenY();
@@ -122,48 +102,38 @@ public class DashboardController implements Initializable {
             stage.setY(event.getScreenY() + yOffset);
         });
 
-        signoutIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, this::handleSignOut);
+        signoutIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> handleSignOut());
     }
 
-    private void handleSignOut(MouseEvent event) {
-        try {
-            Stage stage = (Stage) signoutIcon.getScene().getWindow();
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/Login.fxml"));
-            fxmlLoader.setControllerFactory(c -> new LoginController());
-
-            // Load FXML trong background thread
-            executorService.submit(() -> {
-                try {
-                    Parent root = fxmlLoader.load();
-                    Platform.runLater(() -> {
-                        stage.setScene(new Scene(root));
-                        stage.show();
-                    });
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-
-            stage.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private void handleSignOut() {
+        executorService.submit(() -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Login.fxml"));
+                loader.setControllerFactory(c -> new LoginController());
+                Parent root = loader.load();
+                Platform.runLater(() -> {
+                    stage.setScene(new Scene(root));
+                    stage.show();
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void initializeLoader() {
         MFXLoader loader = new MFXLoader();
-
-        // Sử dụng LinkedHashMap để duy trì thứ tự các view
-        LinkedHashMap<String, ViewData> viewsOrder = new LinkedHashMap<>();
-        viewsOrder.put("HOME", new ViewData("/fxml/Home.fxml", "fas-house", "Trang Chủ", true));
-        viewsOrder.put("ACCESSCONTROL", new ViewData("/fxml/AccessControl.fxml", "fas-chart-column", "Quản lý ra vào", false));
-        viewsOrder.put("EMPLOYEES", new ViewData("/fxml/Employees.fxml", "fas-address-card", "Quản lý nhân viên", false));
-        viewsOrder.put("REGISTER", new ViewData("/fxml/Guests.fxml", "fas-building-user", "Quản lý khách", false));
-        viewsOrder.put("DEPARTMENTS", new ViewData("/fxml/Deparments.fxml", "fas-building-columns", "Quản lý Phòng ban", false));
-        viewsOrder.put("ROLES", new ViewData("/fxml/Roles.fxml", "fas-award", "Quản lý chức vụ", false));
+        LinkedHashMap<String, ViewData> views = new LinkedHashMap<>() {{
+            put("HOME", new ViewData("/fxml/Home.fxml", "fas-house", "Trang Chủ", true));
+            put("ACCESSCONTROL", new ViewData("/fxml/AccessControl.fxml", "fas-chart-column", "Quản lý ra vào", false));
+            put("EMPLOYEES", new ViewData("/fxml/Employees.fxml", "fas-address-card", "Quản lý nhân viên", false));
+            put("GUESTS", new ViewData("/fxml/Guests.fxml", "fas-building-user", "Quản lý khách", false));
+            put("DEPARTMENTS", new ViewData("/fxml/Deparments.fxml", "fas-building-columns", "Quản lý Phòng ban", false));
+            put("ROLES", new ViewData("/fxml/Roles.fxml", "fas-award", "Quản lý chức vụ", false));
+        }};
 
         // Thêm views theo thứ tự
-        viewsOrder.forEach((name, data) -> {
+        views.forEach((name, data) -> {
             loader.addView(MFXLoaderBean.of(name, loadURL(data.getFxmlPath()))
                     .setBeanToNodeMapper(() -> createToggle(data.getIcon(), data.getText()))
                     .setDefaultRoot(data.isDefault())
@@ -173,7 +143,7 @@ public class DashboardController implements Initializable {
         loader.setOnLoadedAction(beans -> {
             List<ToggleButton> nodes = new ArrayList<>();
             // Duy trì thứ tự của các view khi tạo toggle buttons
-            viewsOrder.forEach((name, data) -> {
+            views.forEach((name, data) -> {
                 beans.stream()
                         .filter(bean -> bean.getViewName().equals(name))
                         .findFirst()
@@ -192,60 +162,76 @@ public class DashboardController implements Initializable {
 
         loader.start();
     }
+    private boolean shouldPreload(String name) {
+        // Danh sách các view cần preload
+        Set<String> preloadViews = Set.of("ACCESSCONTROL","GUESTS");
 
-    private MFXLoaderBean createLoaderBean(String name, String fxmlPath, String icon, String text, boolean isDefault) {
-        return MFXLoaderBean.of(name, loadURL(fxmlPath))
-                .setBeanToNodeMapper(() -> createToggle(icon, text))
-                .setDefaultRoot(isDefault)
-                .get();
+        // Kiểm tra nếu view nằm trong danh sách preload
+        return preloadViews.contains(name);
     }
 
-    private ToggleButton createToggleFromBean(MFXLoaderBean bean) {
+    private ToggleButton createToggleButton(MFXLoaderBean bean) {
         ToggleButton toggle = (ToggleButton) bean.getBeanToNodeMapper().get();
         toggle.setOnAction(event -> {
             if (!viewCache.containsKey(bean.getViewName())) {
-                viewCache.put(bean.getViewName(), bean.getRoot());
-            }
-            contentPane.getChildren().setAll(viewCache.get(bean.getViewName()));
-        });
+                // Hiển thị placeholder loading
+                contentPane.getChildren().setAll(createLoadingPlaceholder());
 
-        if (bean.isDefaultView()) {
-            contentPane.getChildren().setAll(bean.getRoot());
-            toggle.setSelected(true);
-        }
+                executorService.submit(() -> {
+                    try {
+                        // Tải tệp FXML và thêm vào bộ nhớ đệm
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource(bean.getFxmlFile().getPath()));
+                        System.out.println(bean.getFxmlFile().getPath());
+                        Parent view = loader.load();
+                        viewCache.put(bean.getViewName(), view);
+
+                        // Cập nhật giao diện trên JavaFX thread
+                        Platform.runLater(() -> contentPane.getChildren().setAll(view));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        System.out.println("Failed to load view: " + bean.getViewName());
+                        // Nếu lỗi, hiển thị thông báo lỗi
+//                        Platform.runLater(() -> contentPane.getChildren().setAll(createLoadingPlaceholder()));
+                    }
+                });
+            } else {
+                // Sử dụng view đã cache
+                contentPane.getChildren().setAll(viewCache.get(bean.getViewName()));
+            }
+        });
         return toggle;
     }
 
-    private void initializeLogo() {
-        Image image = new Image(MFXDemoResourcesLoader.load("/assets/logo_qr.png"),
-                LOGO_SIZE, LOGO_SIZE, true, true);
-        ImageView logo = new ImageView(image);
 
-        Circle clip = new Circle(CLIP_RADIUS);
+    private Node createLoadingPlaceholder() {
+        MFXProgressSpinner loading = new MFXProgressSpinner();
+//        ProgressIndicator loadingIndicator = new ProgressIndicator();
+        StackPane placeholder = new StackPane(loading);
+        placeholder.setPrefSize(400, 300);
+        return placeholder;
+    }
+
+    private void initializeLogo() {
+        ImageView logo = new ImageView(new Image(MFXDemoResourcesLoader.load("/assets/logo_qr.png"), 100, 100, true, true));
+        Circle clip = new Circle(50);
         clip.centerXProperty().bind(logo.layoutBoundsProperty().map(Bounds::getCenterX));
         clip.centerYProperty().bind(logo.layoutBoundsProperty().map(Bounds::getCenterY));
-
         logo.setClip(clip);
         logoContainer.getChildren().add(logo);
     }
 
     private ToggleButton createToggle(String icon, String text) {
-        return createToggle(icon, text, 0);
-    }
-
-    private ToggleButton createToggle(String icon, String text, double rotate) {
-        MFXIconWrapper wrapper = new MFXIconWrapper(icon, ICON_SIZE, WRAPPER_SIZE);
+        MFXIconWrapper wrapper = new MFXIconWrapper(icon, 24, 32);
         MFXRectangleToggleNode toggleNode = new MFXRectangleToggleNode(text, wrapper);
         toggleNode.setAlignment(Pos.CENTER_LEFT);
         toggleNode.setMaxWidth(Double.MAX_VALUE);
         toggleNode.setToggleGroup(toggleGroup);
-        if (rotate != 0) wrapper.getIcon().setRotate(rotate);
         return toggleNode;
     }
 
-    // Cleanup resources
     public void cleanup() {
         executorService.shutdown();
         viewCache.clear();
     }
 }
+

@@ -1,5 +1,6 @@
 package com.bachnh.accesscontrolsystem.controller;
-import com.bachnh.accesscontrolsystem.dto.EmployeeDT0;
+import com.bachnh.accesscontrolsystem.dto.AccessControlDTO;
+import com.bachnh.accesscontrolsystem.dto.AccessControlDTO;
 import com.bachnh.accesscontrolsystem.utils.TableUtils;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXPagination;
@@ -32,11 +33,11 @@ import java.util.logging.Logger;
 
 public class AccessControlController implements Initializable {
     @FXML
-    private TableView<EmployeeDT0> fixedFirstTable;
+    private TableView<AccessControlDTO> fixedFirstTable;
     @FXML
-    private TableView<EmployeeDT0> scrollableTable;
+    private TableView<AccessControlDTO> scrollableTable;
     @FXML
-    private TableView<EmployeeDT0> fixedLastTable;
+    private TableView<AccessControlDTO> fixedLastTable;
     @FXML
     private HBox tableContainer;
     @FXML
@@ -47,9 +48,9 @@ public class AccessControlController implements Initializable {
     private MFXPagination paginator;
     @FXML
     private FXMLLoader loader;
-    private ObservableList<EmployeeDT0> masterData; // Danh sách dữ liệu gốc
+    private ObservableList<AccessControlDTO> masterData; // Danh sách dữ liệu gốc
     private final int ROWS_PER_PAGE = 30;
-    private final Map<Integer, ObservableList<EmployeeDT0>> pageCache = new HashMap<>();
+    private final Map<Integer, ObservableList<AccessControlDTO>> pageCache = new HashMap<>();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -106,7 +107,7 @@ public class AccessControlController implements Initializable {
         int fromIndex = (pageIndex - 1) * ROWS_PER_PAGE;
         int toIndex = Math.min(fromIndex + ROWS_PER_PAGE, masterData.size());
 
-        ObservableList<EmployeeDT0> pageData = FXCollections.observableArrayList(
+        ObservableList<AccessControlDTO> pageData = FXCollections.observableArrayList(
                 masterData.subList(fromIndex, toIndex)
         );
 
@@ -121,68 +122,55 @@ public class AccessControlController implements Initializable {
         });
     }
 
-    private void setupTable(ObservableList<EmployeeDT0> data) {
+    private void setupTable(ObservableList<AccessControlDTO> data) {
         // Khởi tạo các cột bảng
         if (fixedFirstTable.getColumns().isEmpty()) {
             fixedFirstTable.setMinWidth(210);
-            TableColumn<EmployeeDT0, String> IDColumn = new TableColumn<>("ID");
-            TableColumn<EmployeeDT0, String> employeeCodeColumn = new TableColumn<>("Mã Nhân viên");
+            TableColumn<AccessControlDTO, String> IDColumn = new TableColumn<>("ID");
+            TableColumn<AccessControlDTO, String> codeColumn = new TableColumn<>("Mã Nhân viên");
             IDColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getID()));
-            employeeCodeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEmployeecode()));
-            employeeCodeColumn.setMinWidth(150);
-            fixedFirstTable.getColumns().addAll(IDColumn, employeeCodeColumn);
+            codeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCode()));
+            codeColumn.setMinWidth(150);
+            fixedFirstTable.getColumns().addAll(IDColumn, codeColumn);
             fixedFirstTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
             TableUtils.disableSorting(fixedFirstTable);
         }
 
         if (scrollableTable.getColumns().isEmpty()) {
-            TableColumn<EmployeeDT0, String> fullnameColumn = new TableColumn<>("Họ và Tên");
-            TableColumn<EmployeeDT0, String> genderColumn = new TableColumn<>("Giới tính");
-            TableColumn<EmployeeDT0, String> birthdayColumn = new TableColumn<>("Ngày sinh");
-            TableColumn<EmployeeDT0, String> mobileColumn = new TableColumn<>("Số điện thoại");
-            TableColumn<EmployeeDT0, String> cardIdColumn = new TableColumn<>("CMND/CCCD");
-            TableColumn<EmployeeDT0, String> emailColumn = new TableColumn<>("Email");
-            TableColumn<EmployeeDT0, String> addressColumn = new TableColumn<>("Địa chỉ");
-            TableColumn<EmployeeDT0, String> departmentNameColumn = new TableColumn<>("Phòng ban");
-            TableColumn<EmployeeDT0, String> roleNameColumn = new TableColumn<>("Vị trí");
-            TableColumn<EmployeeDT0, String> statusColumn = new TableColumn<>("Trạng thái");
-            TableColumn<EmployeeDT0, String> createDateColumn = new TableColumn<>("Ngày tạo");
-            TableColumn<EmployeeDT0, String> updateDateColumn = new TableColumn<>("Ngày cập nhật");
+            TableColumn<AccessControlDTO, String> fullnameColumn = new TableColumn<>("Họ và Tên");
+            TableColumn<AccessControlDTO, String> genderColumn = new TableColumn<>("Giới tính");
+            TableColumn<AccessControlDTO, String> departmentNameColumn = new TableColumn<>("Phòng ban");
+            TableColumn<AccessControlDTO, String> roleNameColumn = new TableColumn<>("Vị trí");
+            TableColumn<AccessControlDTO, String> typeColumn = new TableColumn<>("Loại");
+            TableColumn<AccessControlDTO, String> statusColumn = new TableColumn<>("Trạng thái");
+            TableColumn<AccessControlDTO, String> checkInColumn = new TableColumn<>("Thời gian vào");
+            TableColumn<AccessControlDTO, String> checkOutColumn = new TableColumn<>("Thời gian ra");
 
-            fullnameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getFullname()));
+            fullnameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getFullName()));
             genderColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getGender()));
-            birthdayColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getBirthday()));
-            mobileColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getMobile()));
-            cardIdColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCardId()));
-            emailColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEmail()));
-            addressColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getAddress()));
             departmentNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDepartmentName()));
             roleNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRoleName()));
+            typeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRoleName()));
             statusColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStatus()));
-            createDateColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCreateDate()));
-            updateDateColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUpdateDate()));
+            checkInColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCheckIn()));
+            checkOutColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCheckOut()));
 
             fullnameColumn.setMinWidth(200);
             genderColumn.setMinWidth(100);
-            birthdayColumn.setMinWidth(150);
-            mobileColumn.setMinWidth(150);
-            cardIdColumn.setMinWidth(150);
-            emailColumn.setMinWidth(200);
-            addressColumn.setMinWidth(200);
             departmentNameColumn.setMinWidth(150);
             roleNameColumn.setMinWidth(150);
+            typeColumn.setMinWidth(150);
             statusColumn.setMinWidth(100);
-            createDateColumn.setMinWidth(150);
-            updateDateColumn.setMinWidth(150);
+            checkInColumn.setMinWidth(150);
+            checkOutColumn.setMinWidth(150);
 
-            scrollableTable.getColumns().addAll(fullnameColumn, genderColumn, birthdayColumn, mobileColumn, cardIdColumn,
-                    emailColumn, addressColumn, departmentNameColumn, roleNameColumn, statusColumn, createDateColumn,
-                    updateDateColumn);
+            scrollableTable.getColumns().addAll(fullnameColumn, genderColumn,departmentNameColumn, roleNameColumn, statusColumn, checkInColumn,
+                    checkOutColumn);
             scrollableTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
         }
 
         if (fixedLastTable.getColumns().isEmpty()) {
-            TableColumn<EmployeeDT0, Void> actionColumn = new TableColumn<>("Hành động");
+            TableColumn<AccessControlDTO, Void> actionColumn = new TableColumn<>("Hành động");
             actionColumn.setCellFactory(param -> new TableCell<>() {
                 private final HBox actionBox = new HBox(10);
 
@@ -238,7 +226,7 @@ public class AccessControlController implements Initializable {
 
                         alert.showAndWait().ifPresent(response -> {
                             if (response == ButtonType.OK) {
-                                System.out.println("Xóa nhân viên: " + getTableView().getItems().get(getIndex()).getFullname());
+                                System.out.println("Xóa nhân viên: " + getTableView().getItems().get(getIndex()).getCode());
                             }
                         });
                     });

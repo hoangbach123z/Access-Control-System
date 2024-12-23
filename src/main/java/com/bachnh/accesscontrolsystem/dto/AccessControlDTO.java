@@ -13,25 +13,27 @@ import java.util.concurrent.atomic.AtomicInteger;
 @AllArgsConstructor
 public class AccessControlDTO {
     private static final AtomicInteger count = new AtomicInteger(0);
-    private int id;
+    private String ID;
 
-    private String cCode;
+    private String code;
 
-    private String cFullName;
+    private String fullName;
 
-    private String cCardId;
+    private String gender;
 
-    private String cDepartmentName;
+    private String cardID;
 
-    private String cRoleName;
+    private String departmentName;
 
-    private String cType;
+    private String roleName;
 
-    private String cStatus;
+    private String type;
 
-    private LocalDateTime cCheckIn;
+    private String status;
 
-    private LocalDateTime cCheckOut;
+    private String checkIn;
+
+    private String checkOut;
 
 //    public AccessControlDTO(int id, String cCode, String cFullName, String cCardId, String cDepartmentName, String cRoleName, String cType, String cStatus, LocalDateTime cCheckIn, LocalDateTime cCheckOut) {
 //        this.id = count.incrementAndGet();
