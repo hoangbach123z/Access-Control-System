@@ -60,6 +60,7 @@ public class AccessControlController implements Initializable {
             TableUtils.syncScrollBars(fixedFirstTable, scrollableTable, fixedLastTable);
             TableUtils.synchronizeTableSelection(fixedFirstTable, scrollableTable, fixedLastTable);
         });
+        ScanQR();
     }
 
     private void initializeData() {
@@ -166,7 +167,8 @@ public class AccessControlController implements Initializable {
 
             scrollableTable.getColumns().addAll(fullnameColumn, genderColumn,departmentNameColumn, roleNameColumn, statusColumn, checkInColumn,
                     checkOutColumn);
-            scrollableTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+            scrollableTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS);
+            TableUtils.disableSorting(scrollableTable);
         }
 
         if (fixedLastTable.getColumns().isEmpty()) {

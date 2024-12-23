@@ -12,11 +12,15 @@ public class GuestDTO {
 
     private String ID;
 
-    private String registerCode;
+    private String guestCode;
 
-    private String registerName;
+    private String guestName;
+
+    private String gender;
 
     private String cardId;
+
+    private String birthday;
 
     private String mobie;
 
@@ -26,7 +30,7 @@ public class GuestDTO {
 
     private String status;
 
-    private LocalDateTime createDate;
+    private String createDate;
 
-    private LocalDateTime updateDate;
+    private String updateDate;
 }

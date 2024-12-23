@@ -23,8 +23,8 @@ public class DepartmentDTO {
     private String status;
 
 
-    private LocalDateTime createDate;
+    private String createDate;
 
 
-    private LocalDateTime updateDate;
+    private String updateDate;
 }

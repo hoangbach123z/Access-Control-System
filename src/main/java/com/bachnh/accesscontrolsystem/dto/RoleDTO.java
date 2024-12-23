@@ -1,10 +1,16 @@
 package com.bachnh.accesscontrolsystem.dto;
 
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.time.LocalDateTime;
+@Getter
+@Setter
+@AllArgsConstructor
 public class RoleDTO {
 
-    private String id;
+    private String ID;
 
     private String roleCode;
 
@@ -12,7 +18,7 @@ public class RoleDTO {
 
     private String status;
 
-    private LocalDateTime createDate;
+    private String createDate;
 
-    private LocalDateTime updateDate;
+    private String updateDate;
 }

@@ -8,11 +8,11 @@
 <?import javafx.scene.layout.HBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<BorderPane fx:id="borderPane" prefHeight="667.0" prefWidth="1026.0" xmlns="http://javafx.com/javafx/21.0.5" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bachnh.accesscontrolsystem.controller.EmployeesController">
+<BorderPane fx:id="borderPane" prefHeight="667.0" prefWidth="1026.0" stylesheets="@../fonts/Fonts.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bachnh.accesscontrolsystem.controller.EmployeesController">
 <top>
    <HBox alignment="CENTER_RIGHT" prefHeight="43.0" prefWidth="992.0" BorderPane.alignment="CENTER">
       <children>
-         <MFXButton fx:id="addEmployeeBtn" prefHeight="41.0" prefWidth="105.0" rippleColor="WHITE" style="-fx-background-color:  #008001; -fx-font-family: Open Sans Bold; -fx-text-fill: #ffffff; -fx-font-weight: bold;" text="Thêm mới" textFill="#fcfafa">
+         <MFXButton fx:id="addEmployeeBtn" prefHeight="41.0" prefWidth="105.0" rippleColor="WHITE" style="-fx-background-color: #008001; -fx-font-family: Nunito; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-font-size: 13px;" text="Thêm mới" textFill="#fcfafa">
             <HBox.margin>
                <Insets />
             </HBox.margin>

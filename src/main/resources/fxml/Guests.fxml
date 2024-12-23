@@ -14,7 +14,7 @@
     <top>
         <HBox alignment="CENTER_RIGHT" prefHeight="43.0" prefWidth="992.0" BorderPane.alignment="CENTER">
             <children>
-                <MFXButton fx:id="addEmployeeBtn" prefHeight="41.0" prefWidth="105.0" rippleColor="WHITE" style="-fx-background-color:  #008001; -fx-font-family: Open Sans Bold; -fx-text-fill: #ffffff; -fx-font-weight: bold;" text="Thêm mới" textFill="#fcfafa">
+                <MFXButton fx:id="addGuestBtn" prefHeight="41.0" prefWidth="105.0" rippleColor="WHITE" style="-fx-background-color: #008001; -fx-font-family: Nunito; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-font-size: 13px;" text="Thêm mới" textFill="#fcfafa">
                     <HBox.margin>
                         <Insets />
                     </HBox.margin>

@@ -30,7 +30,11 @@
     -fx-alignment: center;
 
 }
-
+.table-view .column-header .arrow {
+    -fx-shape: "";
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
 /* Table cells styling */
 .table-view .table-cell {
     -fx-font-size: 14px;

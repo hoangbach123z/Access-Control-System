@@ -1,5 +1,6 @@
 package com.bachnh.accesscontrolsystem.controller;
 import com.bachnh.accesscontrolsystem.dto.EmployeeDT0;
+import com.bachnh.accesscontrolsystem.dto.RoleDTO;
 import com.bachnh.accesscontrolsystem.model.Device;
 
 import com.bachnh.accesscontrolsystem.utils.TableUtils;
@@ -19,6 +20,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -64,51 +66,11 @@ public class EmployeesController implements Initializable {
             TableUtils.syncScrollBars(fixedFirstTable, scrollableTable, fixedLastTable);
             TableUtils.synchronizeTableSelection(fixedFirstTable, scrollableTable, fixedLastTable);
         });
+        addEmployee();
     }
 
     private void initializeData() {
         masterData = FXCollections.observableArrayList(
-                new EmployeeDT0("1", "EMP001", "Nguyễn Văn A", "Nam", "01/01/1990", "0912345678", "123456789", "adsadsadsadsadsa@gmail.com", "Hà Nội", "Phòng IT", "Nhân viên", "Hoạt động", "01/01/2023", "02/01/2023"),
-                new EmployeeDT0("2", "EMP002", "Trần Thị B", "Nữ", "15/02/1992", "0918765432", "987654321", "bdsadsadsadsadsa@gmail.com", "Hồ Chí Minh", "Phòng HR", "Quản lý", "Hoạt động", "05/01/2023", "06/01/2023"),
-                new EmployeeDT0("3", "EMP003", "Lê Văn C", "Nam", "20/03/1985", "0987654321", "111222333", "cđasadsadsad@gmail.com", "Đà Nẵng", "Phòng Kế Toán", "Kế toán trưởng", "Hoạt động", "10/01/2023", "11/01/2023"),
-                new EmployeeDT0("4", "EMP004", "Phạm Thị D", "Nữ", "10/04/1995", "0971122334", "444555666", "ddsadsadsadsa@gmail.com", "Hải Phòng", "Phòng IT", "Nhân viên", "Nghỉ việc", "12/01/2023", "14/01/2023"),
-                new EmployeeDT0("5", "EMP005", "Ngô Văn E", "Nam", "05/05/1993", "0933344455", "777888999", "edsadsadsads@gmail.com", "Cần Thơ", "Phòng Sales", "Trưởng phòng", "Hoạt động", "15/01/2023", "16/01/2023"),
-                new EmployeeDT0("6", "EMP006", "Hoàng Thị F", "Nữ", "25/06/1991", "0956677889", "000111222", "fdsadsadsadsa@gmail.com", "Hà Nội", "Phòng Marketing", "Nhân viên", "Hoạt động", "17/01/2023", "18/01/2023"),
-                new EmployeeDT0("7", "EMP007", "Vũ Văn G", "Nam", "30/07/1988", "0911223344", "333222111", "gdsadsdsdsadsa@gmail.com", "Hồ Chí Minh", "Phòng IT", "Quản lý", "Hoạt động", "19/01/2023", "20/01/2023"),
-                new EmployeeDT0("8", "EMP008", "Đặng Thị H", "Nữ", "15/08/1994", "0944455566", "666555444", "hdsadsadsadsad@gmail.com", "Hải Dương", "Phòng HR", "Nhân viên", "Nghỉ việc", "21/01/2023", "22/01/2023"),
-                new EmployeeDT0("9", "EMP009", "Phan Văn I", "Nam", "12/09/1987", "0922233344", "999888777", "idsadsadsadsa@gmail.com", "Quảng Ninh", "Phòng Kỹ Thuật", "Trưởng phòng", "Hoạt động", "23/01/2023", "24/01/2023"),
-                new EmployeeDT0("10", "EMP010", "Lý Thị J", "Nữ", "01/10/1990", "0915566778", "123321456", "jdsadsdsadsa@gmail.com", "Vĩnh Phúc", "Phòng IT", "Nhân viên", "Hoạt động", "25/01/2023", "26/01/2023"),
-                new EmployeeDT0("11", "EMP001", "Nguyễn Văn A", "Nam", "01/01/1990", "0912345678", "123456789", "adsadsadsadsadsa@gmail.com", "Hà Nội", "Phòng IT", "Nhân viên", "Hoạt động", "01/01/2023", "02/01/2023"),
-                new EmployeeDT0("12", "EMP002", "Trần Thị B", "Nữ", "15/02/1992", "0918765432", "987654321", "bdsadsadsadsadsa@gmail.com", "Hồ Chí Minh", "Phòng HR", "Quản lý", "Hoạt động", "05/01/2023", "06/01/2023"),
-                new EmployeeDT0("13", "EMP003", "Lê Văn C", "Nam", "20/03/1985", "0987654321", "111222333", "cđasadsadsad@gmail.com", "Đà Nẵng", "Phòng Kế Toán", "Kế toán trưởng", "Hoạt động", "10/01/2023", "11/01/2023"),
-                new EmployeeDT0("14", "EMP004", "Phạm Thị D", "Nữ", "10/04/1995", "0971122334", "444555666", "ddsadsadsadsa@gmail.com", "Hải Phòng", "Phòng IT", "Nhân viên", "Nghỉ việc", "12/01/2023", "14/01/2023"),
-                new EmployeeDT0("15", "EMP005", "Ngô Văn E", "Nam", "05/05/1993", "0933344455", "777888999", "edsadsadsads@gmail.com", "Cần Thơ", "Phòng Sales", "Trưởng phòng", "Hoạt động", "15/01/2023", "16/01/2023"),
-                new EmployeeDT0("16", "EMP006", "Hoàng Thị F", "Nữ", "25/06/1991", "0956677889", "000111222", "fdsadsadsadsa@gmail.com", "Hà Nội", "Phòng Marketing", "Nhân viên", "Hoạt động", "17/01/2023", "18/01/2023"),
-                new EmployeeDT0("17", "EMP007", "Vũ Văn G", "Nam", "30/07/1988", "0911223344", "333222111", "gdsadsdsdsadsa@gmail.com", "Hồ Chí Minh", "Phòng IT", "Quản lý", "Hoạt động", "19/01/2023", "20/01/2023"),
-                new EmployeeDT0("18", "EMP008", "Đặng Thị H", "Nữ", "15/08/1994", "0944455566", "666555444", "hdsadsadsadsad@gmail.com", "Hải Dương", "Phòng HR", "Nhân viên", "Nghỉ việc", "21/01/2023", "22/01/2023"),
-                new EmployeeDT0("19", "EMP009", "Phan Văn I", "Nam", "12/09/1987", "0922233344", "999888777", "idsadsadsadsa@gmail.com", "Quảng Ninh", "Phòng Kỹ Thuật", "Trưởng phòng", "Hoạt động", "23/01/2023", "24/01/2023"),
-                new EmployeeDT0("20", "EMP010", "Lý Thị J", "Nữ", "01/10/1990", "0915566778", "123321456", "jdsadsdsadsa@gmail.com", "Vĩnh Phúc", "Phòng IT", "Nhân viên", "Hoạt động", "25/01/2023", "26/01/2023"),
-                new EmployeeDT0("21", "EMP001", "Nguyễn Văn A", "Nam", "01/01/1990", "0912345678", "123456789", "adsadsadsadsadsa@gmail.com", "Hà Nội", "Phòng IT", "Nhân viên", "Hoạt động", "01/01/2023", "02/01/2023"),
-                new EmployeeDT0("22", "EMP002", "Trần Thị B", "Nữ", "15/02/1992", "0918765432", "987654321", "bdsadsadsadsadsa@gmail.com", "Hồ Chí Minh", "Phòng HR", "Quản lý", "Hoạt động", "05/01/2023", "06/01/2023"),
-                new EmployeeDT0("23", "EMP003", "Lê Văn C", "Nam", "20/03/1985", "0987654321", "111222333", "cđasadsadsad@gmail.com", "Đà Nẵng", "Phòng Kế Toán", "Kế toán trưởng", "Hoạt động", "10/01/2023", "11/01/2023"),
-                new EmployeeDT0("24", "EMP004", "Phạm Thị D", "Nữ", "10/04/1995", "0971122334", "444555666", "ddsadsadsadsa@gmail.com", "Hải Phòng", "Phòng IT", "Nhân viên", "Nghỉ việc", "12/01/2023", "14/01/2023"),
-                new EmployeeDT0("25", "EMP005", "Ngô Văn E", "Nam", "05/05/1993", "0933344455", "777888999", "edsadsadsads@gmail.com", "Cần Thơ", "Phòng Sales", "Trưởng phòng", "Hoạt động", "15/01/2023", "16/01/2023"),
-                new EmployeeDT0("26", "EMP006", "Hoàng Thị F", "Nữ", "25/06/1991", "0956677889", "000111222", "fdsadsadsadsa@gmail.com", "Hà Nội", "Phòng Marketing", "Nhân viên", "Hoạt động", "17/01/2023", "18/01/2023"),
-                new EmployeeDT0("27", "EMP007", "Vũ Văn G", "Nam", "30/07/1988", "0911223344", "333222111", "gdsadsdsdsadsa@gmail.com", "Hồ Chí Minh", "Phòng IT", "Quản lý", "Hoạt động", "19/01/2023", "20/01/2023"),
-                new EmployeeDT0("28", "EMP008", "Đặng Thị H", "Nữ", "15/08/1994", "0944455566", "666555444", "hdsadsadsadsad@gmail.com", "Hải Dương", "Phòng HR", "Nhân viên", "Nghỉ việc", "21/01/2023", "22/01/2023"),
-                new EmployeeDT0("29", "EMP009", "Phan Văn I", "Nam", "12/09/1987", "0922233344", "999888777", "idsadsadsadsa@gmail.com", "Quảng Ninh", "Phòng Kỹ Thuật", "Trưởng phòng", "Hoạt động", "23/01/2023", "24/01/2023"),
-                new EmployeeDT0("30", "EMP010", "Lý Thị J", "Nữ", "01/10/1990", "0915566778", "123321456", "jdsadsdsadsa@gmail.com", "Vĩnh Phúc", "Phòng IT", "Nhân viên", "Hoạt động", "25/01/2023", "26/01/2023"),
-                new EmployeeDT0("31", "EMP010", "Lý Thị J", "Nữ", "01/10/1990", "0915566778", "123321456", "jdsadsdsadsa@gmail.com", "Vĩnh Phúc", "Phòng IT", "Nhân viên", "Hoạt động", "25/01/2023", "26/01/2023"),
-                new EmployeeDT0("32", "EMP001", "Nguyễn Văn A", "Nam", "01/01/1990", "0912345678", "123456789", "adsadsadsadsadsa@gmail.com", "Hà Nội", "Phòng IT", "Nhân viên", "Hoạt động", "01/01/2023", "02/01/2023"),
-                new EmployeeDT0("33", "EMP002", "Trần Thị B", "Nữ", "15/02/1992", "0918765432", "987654321", "bdsadsadsadsadsa@gmail.com", "Hồ Chí Minh", "Phòng HR", "Quản lý", "Hoạt động", "05/01/2023", "06/01/2023"),
-                new EmployeeDT0("34", "EMP003", "Lê Văn C", "Nam", "20/03/1985", "0987654321", "111222333", "cđasadsadsad@gmail.com", "Đà Nẵng", "Phòng Kế Toán", "Kế toán trưởng", "Hoạt động", "10/01/2023", "11/01/2023"),
-                new EmployeeDT0("35", "EMP004", "Phạm Thị D", "Nữ", "10/04/1995", "0971122334", "444555666", "ddsadsadsadsa@gmail.com", "Hải Phòng", "Phòng IT", "Nhân viên", "Nghỉ việc", "12/01/2023", "14/01/2023"),
-                new EmployeeDT0("36", "EMP005", "Ngô Văn E", "Nam", "05/05/1993", "0933344455", "777888999", "edsadsadsads@gmail.com", "Cần Thơ", "Phòng Sales", "Trưởng phòng", "Hoạt động", "15/01/2023", "16/01/2023"),
-                new EmployeeDT0("37", "EMP006", "Hoàng Thị F", "Nữ", "25/06/1991", "0956677889", "000111222", "fdsadsadsadsa@gmail.com", "Hà Nội", "Phòng Marketing", "Nhân viên", "Hoạt động", "17/01/2023", "18/01/2023"),
-                new EmployeeDT0("38", "EMP007", "Vũ Văn G", "Nam", "30/07/1988", "0911223344", "333222111", "gdsadsdsdsadsa@gmail.com", "Hồ Chí Minh", "Phòng IT", "Quản lý", "Hoạt động", "19/01/2023", "20/01/2023"),
-                new EmployeeDT0("39", "EMP008", "Đặng Thị H", "Nữ", "15/08/1994", "0944455566", "666555444", "hdsadsadsadsad@gmail.com", "Hải Dương", "Phòng HR", "Nhân viên", "Nghỉ việc", "21/01/2023", "22/01/2023"),
-                new EmployeeDT0("40", "EMP009", "Phan Văn I", "Nam", "12/09/1987", "0922233344", "999888777", "idsadsadsadsa@gmail.com", "Quảng Ninh", "Phòng Kỹ Thuật", "Trưởng phòng", "Hoạt động", "23/01/2023", "24/01/2023"),
-                new EmployeeDT0("41", "EMP010", "Lý Thị J", "Nữ", "01/10/1990", "0915566778", "123321456", "jdsadsdsadsa@gmail.com", "Vĩnh Phúc", "Phòng IT", "Nhân viên", "Hoạt động", "25/01/2023", "26/01/2023")
 
         );
         setupTable(masterData); // Khởi tạo bảng
@@ -222,6 +184,7 @@ public class EmployeesController implements Initializable {
                     emailColumn, addressColumn, departmentNameColumn, roleNameColumn, statusColumn, createDateColumn,
                     updateDateColumn);
             scrollableTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+            TableUtils.disableSorting(scrollableTable);
 
         }
 
@@ -317,6 +280,22 @@ public class EmployeesController implements Initializable {
 
             TableUtils.disableSorting(fixedLastTable);
         }
+    }
+    private void addEmployee() {
+        addEmployeeBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            FXMLLoader loader = new FXMLLoader ();
+            loader.setLocation(getClass().getResource("/fxml/AddEmployee.fxml"));
+            try {
+                loader.load();
+            } catch (IOException ex) {
+                Logger.getLogger(AddEmployeeController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            Parent parent = loader.getRoot();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(parent));
+            stage.initStyle(StageStyle.UTILITY);
+            stage.show();
+        });
     }
 
 }
