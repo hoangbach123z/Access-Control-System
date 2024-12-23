@@ -72,7 +72,8 @@ public class DepartmentController implements Initializable {
             TableUtils.syncScrollBars(fixedFirstTable, scrollableTable, fixedLastTable);
             TableUtils.synchronizeTableSelection(fixedFirstTable, scrollableTable, fixedLastTable);
         });
-        addDepartment();
+        addDepartmentBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> addDepartment());;
+
     }
 
     private void initializeData() {
@@ -265,20 +266,18 @@ public class DepartmentController implements Initializable {
         }
     }
     private void addDepartment() {
-        addDepartmentBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            FXMLLoader loader = new FXMLLoader ();
-            loader.setLocation(getClass().getResource("/fxml/AddDepartment.fxml"));
-            try {
-                loader.load();
-            } catch (IOException ex) {
-                Logger.getLogger(AddDepartmentController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            Parent parent = loader.getRoot();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(parent));
-            stage.initStyle(StageStyle.UTILITY);
-            stage.show();
-        });
+        FXMLLoader loader = new FXMLLoader ();
+        loader.setLocation(getClass().getResource("/fxml/AddDepartment.fxml"));
+        try {
+            loader.load();
+        } catch (IOException ex) {
+            Logger.getLogger(AddDepartmentController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        Parent parent = loader.getRoot();
+        Stage stage = new Stage();
+        stage.setScene(new Scene(parent));
+        stage.initStyle(StageStyle.UTILITY);
+        stage.show();
     }
 
 }

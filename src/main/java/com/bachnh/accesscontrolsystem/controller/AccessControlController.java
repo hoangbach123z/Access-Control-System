@@ -60,7 +60,7 @@ public class AccessControlController implements Initializable {
             TableUtils.syncScrollBars(fixedFirstTable, scrollableTable, fixedLastTable);
             TableUtils.synchronizeTableSelection(fixedFirstTable, scrollableTable, fixedLastTable);
         });
-        ScanQR();
+        scanQrBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> openScanQR());
     }
 
     private void initializeData() {
@@ -263,21 +263,19 @@ public class AccessControlController implements Initializable {
         }
 
     }
-    private void ScanQR() {
-        scanQrBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            FXMLLoader loader = new FXMLLoader ();
-            loader.setLocation(getClass().getResource("/fxml/ScanQR.fxml"));
-            try {
-                loader.load();
-            } catch (IOException ex) {
-                Logger.getLogger(AddEmployeeController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            Parent parent = loader.getRoot();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(parent));
-            stage.initStyle(StageStyle.UTILITY);
-            stage.show();
-        });
+    private void openScanQR() {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/fxml/ScanQR.fxml"));
+        try {
+            loader.load();
+        } catch (IOException ex) {
+            Logger.getLogger(AddEmployeeController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        Parent parent = loader.getRoot();
+        Stage stage = new Stage();
+        stage.setScene(new Scene(parent));
+        stage.initStyle(StageStyle.UTILITY);
+        stage.show();
     }
 
 }

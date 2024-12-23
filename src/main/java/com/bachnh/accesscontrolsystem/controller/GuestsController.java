@@ -77,7 +77,8 @@ public class GuestsController implements Initializable {
             TableUtils.syncScrollBars(fixedFirstTable, scrollableTable, fixedLastTable);
             TableUtils.synchronizeTableSelection(fixedFirstTable, scrollableTable, fixedLastTable);
         });
-        addGuest();
+        addGuestBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> addGuest());;
+
     }
 
     private void initializeData() {
@@ -286,19 +287,17 @@ public class GuestsController implements Initializable {
         }
     }
     private void addGuest() {
-        addGuestBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            FXMLLoader loader = new FXMLLoader ();
-            loader.setLocation(getClass().getResource("/fxml/AddGuest.fxml"));
-            try {
-                loader.load();
-            } catch (IOException ex) {
-                Logger.getLogger(AddEmployeeController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            Parent parent = loader.getRoot();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(parent));
-            stage.initStyle(StageStyle.UTILITY);
-            stage.show();
-        });
+        FXMLLoader loader = new FXMLLoader ();
+        loader.setLocation(getClass().getResource("/fxml/AddGuest.fxml"));
+        try {
+            loader.load();
+        } catch (IOException ex) {
+            Logger.getLogger(AddEmployeeController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        Parent parent = loader.getRoot();
+        Stage stage = new Stage();
+        stage.setScene(new Scene(parent));
+        stage.initStyle(StageStyle.UTILITY);
+        stage.show();
     }
 }
