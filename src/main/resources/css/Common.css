@@ -20,9 +20,9 @@
 @import 'MFXColors.css';
 
 .header-label {
-	-fx-font-family: 'Open Sans Bold';
-	-fx-font-size: 14;
-	-fx-text-fill: -mfx-text-he;
+	-fx-font-family: 'Nunito';
+	-fx-font-size: 18;
+	-fx-font-weight: bold;
 }
 
 .header-label .text {
@@ -30,8 +30,9 @@
 }
 
 .sub-header-label {
-	-fx-font-family: 'Open Sans SemiBold';
-	-fx-text-fill: -mfx-text-he;
+	-fx-font-family: 'Nunito';
+	-fx-font-size: 14;
+
 }
 
 .sub-header-label .text {
@@ -47,3 +48,38 @@
 	-fx-background-radius: 10;
 	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.12, -1.0, 2.0);
 }
+.anchor-background {
+	-fx-background-color: white;
+	-fx-background-radius: 10;
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.12, -1.0, 2.0);
+}
+.custom-hbox {
+	-fx-background-color: white;
+	-fx-background-radius: 5;
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.12, -1.0, 2.0);
+}
+.cancel-button {
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.12, -1.0, 2.0);
+
+}
+.save-button {
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.12, -1.0, 2.0);
+	-fx-background-color: #000000;
+}
+.save-button.button{
+	-fx-background-color: #0C969C;
+	-fx-text-fill: #ffffff;
+}
+.add-button {
+	-fx-background-color: #008001;
+
+}
+.add-button.button{
+	-fx-background-color: #008001;
+	-fx-font-family: Nunito;
+	-fx-text-fill: #ffffff;
+	-fx-font-weight: bold;
+	-fx-font-size: 13px;
+}
+
+

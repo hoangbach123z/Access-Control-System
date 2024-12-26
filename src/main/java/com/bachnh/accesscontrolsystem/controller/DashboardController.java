@@ -14,6 +14,7 @@ import io.github.palexdev.materialfx.utils.ToggleButtonsUtil;
 import io.github.palexdev.materialfx.utils.others.loader.MFXLoader;
 import io.github.palexdev.materialfx.utils.others.loader.MFXLoaderBean;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -68,14 +69,14 @@ public class DashboardController implements Initializable {
     private void initializeUI() {
         ToggleButtonsUtil.addAlwaysOneSelectedSupport(toggleGroup);
         Platform.runLater(() -> {
-            CSSFX.start();
-        UserAgentBuilder.builder()
-                .themes(JavaFXThemes.CASPIAN)
-                .themes(MaterialFXStylesheets.forAssemble(true))
-                .setDeploy(true)
-                .setResolveAssets(true)
-                .build()
-                .setGlobal();
+             CSSFX.start();
+             UserAgentBuilder.builder()
+                     .themes(JavaFXThemes.CASPIAN)
+                     .themes(MaterialFXStylesheets.forAssemble(true))
+                     .setDeploy(true)
+                     .setResolveAssets(true)
+                     .build()
+                     .setGlobal();
         });
     }
 
@@ -106,8 +107,9 @@ public class DashboardController implements Initializable {
     }
 
     private void handleSignOut() {
-        executorService.submit(() -> {
-            try {
+        Task<Void> signOutTask = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Login.fxml"));
                 loader.setControllerFactory(c -> new LoginController());
                 Parent root = loader.load();
@@ -115,24 +117,23 @@ public class DashboardController implements Initializable {
                     stage.setScene(new Scene(root));
                     stage.show();
                 });
-            } catch (IOException e) {
-                e.printStackTrace();
+                return null;
             }
-        });
+        };
+        executorService.submit(signOutTask);
     }
 
     private void initializeLoader() {
         MFXLoader loader = new MFXLoader();
         LinkedHashMap<String, ViewData> views = new LinkedHashMap<>() {{
-            put("HOME", new ViewData("/fxml/Home.fxml", "fas-house", "Trang Chủ", true));
-            put("ACCESSCONTROL", new ViewData("/fxml/AccessControl.fxml", "fas-chart-column", "Quản lý ra vào", false));
-            put("EMPLOYEES", new ViewData("/fxml/Employees.fxml", "fas-address-card", "Quản lý nhân viên", false));
-            put("GUESTS", new ViewData("/fxml/Guests.fxml", "fas-building-user", "Quản lý khách", false));
-            put("DEPARTMENTS", new ViewData("/fxml/Deparments.fxml", "fas-building-columns", "Quản lý Phòng ban", false));
-            put("ROLES", new ViewData("/fxml/Roles.fxml", "fas-award", "Quản lý chức vụ", false));
+            put("Home", new ViewData("/fxml/Home.fxml", "fas-house", "Trang Chủ", true));
+            put("AccessControl", new ViewData("/fxml/AccessControl.fxml", "fas-chart-column", "Quản lý ra vào", false));
+            put("Employees", new ViewData("/fxml/Employees.fxml", "fas-address-card", "Quản lý nhân viên", false));
+            put("Guests", new ViewData("/fxml/Guests.fxml", "fas-building-user", "Quản lý khách", false));
+            put("Deparments", new ViewData("/fxml/Deparments.fxml", "fas-building-columns", "Quản lý Phòng ban", false));
+            put("Roles", new ViewData("/fxml/Roles.fxml", "fas-award", "Quản lý chức vụ", false));
         }};
 
-        // Thêm views theo thứ tự
         views.forEach((name, data) -> {
             loader.addView(MFXLoaderBean.of(name, loadURL(data.getFxmlPath()))
                     .setBeanToNodeMapper(() -> createToggle(data.getIcon(), data.getText()))
@@ -142,16 +143,15 @@ public class DashboardController implements Initializable {
 
         loader.setOnLoadedAction(beans -> {
             List<ToggleButton> nodes = new ArrayList<>();
-            // Duy trì thứ tự của các view khi tạo toggle buttons
             views.forEach((name, data) -> {
                 beans.stream()
                         .filter(bean -> bean.getViewName().equals(name))
                         .findFirst()
                         .ifPresent(bean -> {
                             ToggleButton toggle = (ToggleButton) bean.getBeanToNodeMapper().get();
-                            toggle.setOnAction(event -> contentPane.getChildren().setAll(bean.getRoot()));
+                            toggle.setOnAction(event -> loadView(bean));
                             if (bean.isDefaultView()) {
-                                contentPane.getChildren().setAll(bean.getRoot());
+                                loadView(bean);
                                 toggle.setSelected(true);
                             }
                             nodes.add(toggle);
@@ -162,50 +162,39 @@ public class DashboardController implements Initializable {
 
         loader.start();
     }
-    private boolean shouldPreload(String name) {
-        // Danh sách các view cần preload
-        Set<String> preloadViews = Set.of("ACCESSCONTROL","GUESTS");
 
-        // Kiểm tra nếu view nằm trong danh sách preload
-        return preloadViews.contains(name);
-    }
-
-    private ToggleButton createToggleButton(MFXLoaderBean bean) {
-        ToggleButton toggle = (ToggleButton) bean.getBeanToNodeMapper().get();
-        toggle.setOnAction(event -> {
-            if (!viewCache.containsKey(bean.getViewName())) {
-                // Hiển thị placeholder loading
+    private void loadView(MFXLoaderBean bean) {
+        if (!viewCache.containsKey(bean.getViewName())) {
+//            contentPane.getChildren().setAll(createLoadingPlaceholder());
+            Task<Parent> loadViewTask = new Task<>() {
+                @Override
+                protected Parent call() throws Exception {
+                    String relativePath =   "/fxml/" + bean.getViewName() + ".fxml";
+                    URL resourceUrl = getClass().getResource(relativePath);
+                    FXMLLoader loader = new FXMLLoader(resourceUrl);
+                    System.out.println(loader);
+                    return loader.load();
+                }
+            };
+            loadViewTask.setOnSucceeded(event -> {
+                Parent view = loadViewTask.getValue();
+                viewCache.put(bean.getViewName(), view);
+                contentPane.getChildren().setAll(view);
+            });
+            loadViewTask.setOnFailed(event -> {
+                Throwable exception = loadViewTask.getException();
+                System.err.println("Failed to load view: " + bean.getViewName());
+                exception.printStackTrace(); // In chi tiết lỗi
                 contentPane.getChildren().setAll(createLoadingPlaceholder());
-
-                executorService.submit(() -> {
-                    try {
-                        // Tải tệp FXML và thêm vào bộ nhớ đệm
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource(bean.getFxmlFile().getPath()));
-                        System.out.println(bean.getFxmlFile().getPath());
-                        Parent view = loader.load();
-                        viewCache.put(bean.getViewName(), view);
-
-                        // Cập nhật giao diện trên JavaFX thread
-                        Platform.runLater(() -> contentPane.getChildren().setAll(view));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        System.out.println("Failed to load view: " + bean.getViewName());
-                        // Nếu lỗi, hiển thị thông báo lỗi
-//                        Platform.runLater(() -> contentPane.getChildren().setAll(createLoadingPlaceholder()));
-                    }
-                });
-            } else {
-                // Sử dụng view đã cache
-                contentPane.getChildren().setAll(viewCache.get(bean.getViewName()));
-            }
-        });
-        return toggle;
+            });
+            executorService.submit(loadViewTask);
+        } else {
+            contentPane.getChildren().setAll(viewCache.get(bean.getViewName()));
+        }
     }
-
 
     private Node createLoadingPlaceholder() {
         MFXProgressSpinner loading = new MFXProgressSpinner();
-//        ProgressIndicator loadingIndicator = new ProgressIndicator();
         StackPane placeholder = new StackPane(loading);
         placeholder.setPrefSize(400, 300);
         return placeholder;
@@ -233,5 +222,13 @@ public class DashboardController implements Initializable {
         executorService.shutdown();
         viewCache.clear();
     }
+    private URL loadURL(String path) {
+        URL url = getClass().getResource(path);
+        if (url == null) {
+            throw new IllegalArgumentException("FXML file not found: " + path);
+        }
+        return url;
+    }
 }
+
 
