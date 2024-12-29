@@ -37,6 +37,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 
@@ -52,6 +53,8 @@ public class LoginController implements Initializable {
     String salt ;
     @Autowired
     private UserLoginRepository userLoginRepository;
+    @Autowired
+    private ConfigurableApplicationContext springBootContext;
     private  Stage stage;
     private double xOffset;
     private double yOffset;
@@ -128,7 +131,7 @@ public class LoginController implements Initializable {
                         stage.close();
                         // Load giao diện Dashboard từ file FXML
                         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/Dashboard.fxml"));
-                        fxmlLoader.setControllerFactory(c->new DashboardController(stage));
+                        fxmlLoader.setControllerFactory(springBootContext::getBean);
                         Parent root = null; // Load file FXML và gán cho root
                         try {
                             root = fxmlLoader.load();

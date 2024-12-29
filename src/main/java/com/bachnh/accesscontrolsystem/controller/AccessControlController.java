@@ -23,6 +23,8 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
@@ -30,7 +32,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+@Component
 public class AccessControlController implements Initializable {
     @FXML
     private TableView<AccessControlDTO> fixedFirstTable;

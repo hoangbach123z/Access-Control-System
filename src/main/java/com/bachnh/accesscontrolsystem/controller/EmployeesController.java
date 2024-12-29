@@ -29,6 +29,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URL;
@@ -38,7 +40,8 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
+@Component
+//@Scope("prototype")
 public class EmployeesController implements Initializable {
     @FXML
     private TableView<EmployeeDT0> fixedFirstTable;
@@ -59,6 +62,8 @@ public class EmployeesController implements Initializable {
     private ObservableList<EmployeeDT0> masterData; // Danh sách dữ liệu gốc
     private final int ROWS_PER_PAGE = 30;
     private final Map<Integer, ObservableList<EmployeeDT0>> pageCache = new HashMap<>();
+    private static final Map<String, Parent> fxmlCache = new HashMap<>();
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -89,7 +94,7 @@ public class EmployeesController implements Initializable {
             protected ObservableList<EmployeeDT0> call() {
                 // Giả lập tải dữ liệu từ nguồn
                 ObservableList<EmployeeDT0> data = FXCollections.observableArrayList(
-                        new EmployeeDT0("1", "EMP001", "Nguyễn Văn A", "Nam", "01/01/1990", "0912345678", "123456789", "adsadsadsadsadsa@gmail.com", "Hà Nội", "Phòng IT", "Nhân viên", "Hoạt động", "01/01/2023", "02/01/2023")
+//                        new EmployeeDT0("1", "EMP001", "Nguyễn Văn A", "Nam", "01/01/1990", "0912345678", "123456789", "adsadsadsadsadsa@gmail.com", "Hà Nội", "Phòng IT", "Nhân viên", "Hoạt động", "01/01/2023", "02/01/2023")
 
                 );
 
@@ -334,23 +339,54 @@ public class EmployeesController implements Initializable {
         addEmployeeBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, event ->
                 loadSceneAsync("/fxml/AddEmployee.fxml"));
     }
+    public class FXMLCache {
+        private static final Map<String, FXMLLoader> cache = new HashMap<>();
+
+        public static Parent get(String fxmlPath) throws IOException {
+            if (cache.containsKey(fxmlPath)) {
+                // Tạo FXMLLoader mới nhưng sử dụng controller đã cache
+                FXMLLoader newLoader = new FXMLLoader(cache.get(fxmlPath).getLocation());
+                return newLoader.load();
+            }
+            return null;
+        }
+
+        public static void put(String fxmlPath, FXMLLoader loader) {
+            cache.put(fxmlPath, loader);
+        }
+
+        public static boolean contains(String fxmlPath) {
+            return cache.containsKey(fxmlPath);
+        }
+
+        public static void clear() {
+            cache.clear();
+        }
+    }
+
     private void loadSceneAsync(String fxmlPath) {
         Task<Parent> loadTask = new Task<>() {
             @Override
             protected Parent call() throws IOException {
-                FXMLLoader loader = new FXMLLoader();
-                loader.setLocation(getClass().getResource(fxmlPath));
-                return loader.load();
+                Parent parent;
+                if (FXMLCache.contains(fxmlPath)) {
+                    parent = FXMLCache.get(fxmlPath);
+                } else {
+                    FXMLLoader loader = new FXMLLoader();
+                    loader.setLocation(getClass().getResource(fxmlPath));
+                    parent = loader.load();
+                    FXMLCache.put(fxmlPath, loader);
+                }
+                return parent;
             }
         };
 
         loadTask.setOnSucceeded(e -> {
             Parent parent = loadTask.getValue();
             Platform.runLater(() -> {
-                // Assuming there's already a stage available or you want to create one
-                Stage stage = new Stage(); // or use an existing stage if applicable
-                Scene scene = new Scene(parent); // Here, we're creating the Scene
-                stage.setScene(scene); // Set the Scene to the Stage
+                Stage stage = new Stage();
+                Scene scene = new Scene(parent);
+                stage.setScene(scene);
                 stage.initStyle(StageStyle.UTILITY);
                 stage.show();
             });
@@ -365,6 +401,9 @@ public class EmployeesController implements Initializable {
         });
 
         new Thread(loadTask).start();
+    }
+    public void cleanup() {
+        fxmlCache.clear();
     }
 
 }

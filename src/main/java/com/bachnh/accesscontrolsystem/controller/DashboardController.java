@@ -2,6 +2,7 @@ package com.bachnh.accesscontrolsystem.controller;
 
 
 import com.bachnh.accesscontrolsystem.MFXDemoResourcesLoader;
+import com.bachnh.accesscontrolsystem.config.StageManager;
 import com.bachnh.accesscontrolsystem.data.ViewData;
 import fr.brouillard.oss.cssfx.CSSFX;
 import io.github.palexdev.materialfx.controls.*;
@@ -35,7 +36,12 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import lombok.RequiredArgsConstructor;
 import org.kordamp.ikonli.javafx.FontIcon;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URL;
@@ -45,14 +51,17 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static com.bachnh.accesscontrolsystem.MFXDemoResourcesLoader.loadURL;
-
+@Component
+@RequiredArgsConstructor
 public class DashboardController implements Initializable {
-    private final Stage stage;
+
+    private final ApplicationContext springBootContext;
+
+//    private final StageManager stage;
     private double xOffset, yOffset;
     private final ToggleGroup toggleGroup = new ToggleGroup();
     private final Map<String, Parent> viewCache = new HashMap<>();
     private final ExecutorService executorService = Executors.newCachedThreadPool();
-
     @FXML private HBox windowHeader;
     @FXML private FontIcon closeIcon, minimizeIcon, maximizeIcon;
     @FXML private MFXButton signoutIcon;
@@ -60,11 +69,6 @@ public class DashboardController implements Initializable {
     @FXML private MFXScrollPane scrollPane;
     @FXML private VBox navBar;
     @FXML private StackPane contentPane, logoContainer;
-
-    public DashboardController(Stage stage) {
-        this.stage = stage;
-        initializeUI();
-    }
 
     private void initializeUI() {
         ToggleButtonsUtil.addAlwaysOneSelectedSupport(toggleGroup);
@@ -90,15 +94,25 @@ public class DashboardController implements Initializable {
 
     private void initializeWindowControls() {
         closeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> Platform.exit());
-        minimizeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> stage.setIconified(true));
-        maximizeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> stage.setMaximized(!stage.isMaximized()));
+
+        minimizeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            Stage stage = (Stage) rootPane.getScene().getWindow();
+            stage.setIconified(true);
+        });
+
+        maximizeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            Stage stage = (Stage) rootPane.getScene().getWindow();
+            stage.setMaximized(!stage.isMaximized());
+        });
 
         windowHeader.setOnMousePressed(event -> {
+            Stage stage = (Stage) windowHeader.getScene().getWindow();
             xOffset = stage.getX() - event.getScreenX();
             yOffset = stage.getY() - event.getScreenY();
         });
 
         windowHeader.setOnMouseDragged(event -> {
+            Stage stage = (Stage) windowHeader.getScene().getWindow();
             stage.setX(event.getScreenX() + xOffset);
             stage.setY(event.getScreenY() + yOffset);
         });
@@ -106,10 +120,13 @@ public class DashboardController implements Initializable {
         signoutIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> handleSignOut());
     }
 
+
     private void handleSignOut() {
         Task<Void> signOutTask = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
+                Stage stage = (Stage) rootPane.getScene().getWindow();
+                stage.close();
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Login.fxml"));
                 loader.setControllerFactory(c -> new LoginController());
                 Parent root = loader.load();
@@ -165,28 +182,31 @@ public class DashboardController implements Initializable {
 
     private void loadView(MFXLoaderBean bean) {
         if (!viewCache.containsKey(bean.getViewName())) {
-//            contentPane.getChildren().setAll(createLoadingPlaceholder());
+            contentPane.getChildren().setAll(createLoadingPlaceholder());
             Task<Parent> loadViewTask = new Task<>() {
                 @Override
                 protected Parent call() throws Exception {
-                    String relativePath =   "/fxml/" + bean.getViewName() + ".fxml";
+                    String relativePath = "/fxml/" + bean.getViewName() + ".fxml";
                     URL resourceUrl = getClass().getResource(relativePath);
                     FXMLLoader loader = new FXMLLoader(resourceUrl);
-                    System.out.println(loader);
+                    loader.setControllerFactory(springBootContext::getBean); // Sử dụng Spring
                     return loader.load();
                 }
             };
+
             loadViewTask.setOnSucceeded(event -> {
                 Parent view = loadViewTask.getValue();
                 viewCache.put(bean.getViewName(), view);
                 contentPane.getChildren().setAll(view);
             });
+
             loadViewTask.setOnFailed(event -> {
                 Throwable exception = loadViewTask.getException();
                 System.err.println("Failed to load view: " + bean.getViewName());
-                exception.printStackTrace(); // In chi tiết lỗi
+                exception.printStackTrace();
                 contentPane.getChildren().setAll(createLoadingPlaceholder());
             });
+
             executorService.submit(loadViewTask);
         } else {
             contentPane.getChildren().setAll(viewCache.get(bean.getViewName()));

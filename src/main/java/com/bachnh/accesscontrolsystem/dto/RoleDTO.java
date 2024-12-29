@@ -5,12 +5,15 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.atomic.AtomicInteger;
+
 @Getter
 @Setter
-@AllArgsConstructor
 public class RoleDTO {
+    private static final AtomicInteger count = new AtomicInteger(1);
 
-    private String ID;
+
+    private final int ID;
 
     private String roleCode;
 
@@ -18,7 +21,17 @@ public class RoleDTO {
 
     private String status;
 
-    private String createDate;
+    private LocalDateTime createDate;
 
-    private String updateDate;
+    private LocalDateTime updateDate;
+
+    public RoleDTO(String roleCode, String roleName, String status, LocalDateTime createDate, LocalDateTime updateDate) {
+        this.ID = count.getAndIncrement();
+        this.roleCode = roleCode;
+        this.roleName = roleName;
+        this.status = status;
+        this.createDate = createDate;
+        this.updateDate = updateDate;
+    }
+
 }

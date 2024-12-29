@@ -2,6 +2,8 @@ package com.bachnh.accesscontrolsystem.controller;
 
 
 import com.bachnh.accesscontrolsystem.dto.RoleDTO;
+import com.bachnh.accesscontrolsystem.entity.Role;
+import com.bachnh.accesscontrolsystem.repository.RoleRepository;
 import com.bachnh.accesscontrolsystem.utils.TableUtils;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXPagination;
@@ -24,14 +26,24 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@Component
+@Lazy
 public class RolesController implements Initializable {
     @FXML
     private TableView<RoleDTO> fixedFirstTable;
@@ -52,7 +64,12 @@ public class RolesController implements Initializable {
     private ObservableList<RoleDTO> masterData; // Danh sách dữ liệu gốc
     private final int ROWS_PER_PAGE = 30;
     private final Map<Integer, ObservableList<RoleDTO>> pageCache = new HashMap<>();
+    @Autowired
+    private RoleRepository roleRepository ;
+    @Autowired
+    private  ApplicationContext springBootContext;
 
+    @FXML
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initializeData();
@@ -66,8 +83,25 @@ public class RolesController implements Initializable {
     }
 
     private void initializeData() {
-        masterData = FXCollections.observableArrayList(
-        );
+        if (roleRepository == null) {
+            return;
+        }
+        // Tiếp tục load data
+        List<Role> roles = roleRepository.findAll();
+//        if (roles.isEmpty()) {}
+        List<RoleDTO> data = roles.stream()
+                .map(role -> new RoleDTO(
+//                        counter.getAndIncrement(),
+                        role.getRoleCode() ,
+                        role.getRoleName(),
+                        role.getStatus(),
+                        role.getCreateDate() != null ? role.getCreateDate() : LocalDateTime.now(),
+                        role.getUpdateDate() != null ? role.getUpdateDate() : LocalDateTime.now()))
+                .toList();
+//        ObservableList<RoleDTO> data = FXCollections.observableArrayList(
+//
+//        );
+        masterData = FXCollections.observableArrayList(data);
         setupTable(masterData); // Khởi tạo bảng
     }
 
@@ -127,7 +161,7 @@ public class RolesController implements Initializable {
             fixedFirstTable.setMinWidth(210);
             TableColumn<RoleDTO, String> IDColumn = new TableColumn<>("ID");
             TableColumn<RoleDTO, String> roleCodeColumn = new TableColumn<>("Mã chức vụ");
-            IDColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getID()));
+            IDColumn.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getID())));
             roleCodeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRoleCode()));
             roleCodeColumn.setMinWidth(150);
             fixedFirstTable.getColumns().addAll(IDColumn, roleCodeColumn);
@@ -144,9 +178,22 @@ public class RolesController implements Initializable {
 
             roleNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRoleName()));
             statusColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStatus()));
-            createDateColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCreateDate()));
-            updateDateColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUpdateDate()));
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            createDateColumn.setCellValueFactory(cellData ->
+                    new SimpleStringProperty(
+                            cellData.getValue().getCreateDate() != null
+                                    ? cellData.getValue().getCreateDate().format(formatter)
+                                    : ""
+                    )
+            );
 
+            updateDateColumn.setCellValueFactory(cellData ->
+                    new SimpleStringProperty(
+                            cellData.getValue().getUpdateDate() != null
+                                    ? cellData.getValue().getUpdateDate().format(formatter)
+                                    : ""
+                    )
+            );
 
             roleNameColumn.setMinWidth(150);
             statusColumn.setMinWidth(100);
@@ -254,8 +301,9 @@ public class RolesController implements Initializable {
         }
     }
     private void addRole() {
-        FXMLLoader loader = new FXMLLoader ();
+        FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/fxml/AddRole.fxml"));
+        loader.setControllerFactory(springBootContext::getBean);
         try {
             loader.load();
         } catch (IOException ex) {
@@ -265,6 +313,14 @@ public class RolesController implements Initializable {
         Stage stage = new Stage();
         stage.setScene(new Scene(parent));
         stage.initStyle(StageStyle.UTILITY);
+
+        // Lắng nghe sự kiện khi cửa sổ được đóng
+        stage.setOnHidden(event -> {
+            // Cập nhật lại dữ liệu bảng
+            initializeData();
+            setupPaginated();
+        });
+
         stage.show();
     }
 }
