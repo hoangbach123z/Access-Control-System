@@ -4,6 +4,7 @@ import com.bachnh.accesscontrolsystem.entity.Role;
 import com.bachnh.accesscontrolsystem.repository.RoleRepository;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXTextField;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.input.MouseEvent;
@@ -28,42 +29,45 @@ public class AddRoleController implements Initializable {
     @FXML
     MFXButton saveBtn;
     @FXML
-    MFXButton cancelBtn;
+    MFXButton cancelBtn;;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        saveBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> save());
-        saveBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> save());
+        saveBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> handleSave());
+        cancelBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> handleCancel() );
     }
 
-    public void save() {
+    private void handleSave() {
         if (roleRepository == null) {
             return;
         }
         String roleName = txtRoleName.getText();
         String roleCode = txtRoleCode.getText();
-
-// Kiểm tra nếu roleCode bị null hoặc rỗng
+        ErrorMessage message = new ErrorMessage();
         if (roleCode == null || roleCode.trim().isEmpty()) {
-            throw new IllegalArgumentException("Mã chức vụ không được để trống");
+            message.errorMessage("Mã chức vụ không được để trống");
+            return;
         }
-
+        if (roleName == null || roleName.trim().isEmpty()) {
+            message.errorMessage("Tên chức vụ không được để trống");
+            return;
+        }
         Role role = roleRepository.findByRoleCode(roleCode);
-
-// Nếu role đã tồn tại, ném lỗi
         if (Objects.nonNull(role)) {
-            throw new RuntimeException("Chức vụ đã tồn tại");
+            message.errorMessage("Chức vụ đã tồn tại");
         }
-
-// Nếu role chưa tồn tại, tạo mới
-        Role data = new Role();
-        data.setID(UUID.randomUUID());
-        data.setRoleCode(roleCode);
-        data.setRoleName(roleName);
-        data.setStatus("Đang hoạt động");
-        data.setCreateDate(LocalDateTime.now());
-
-// Lưu vào cơ sở dữ liệu
-        roleRepository.save(data);
+        else {
+            Role data = new Role();
+            data.setID(UUID.randomUUID());
+            data.setRoleCode(roleCode);
+            data.setRoleName(roleName);
+            data.setStatus("Đang hoạt động");
+            data.setCreateDate(LocalDateTime.now());
+            roleRepository.save(data);
+            Stage stage = (Stage) saveBtn.getScene().getWindow(); // Lấy Stage từ nút
+            stage.close();
+        }
+    }
+    private void handleCancel() {
         Stage stage = (Stage) saveBtn.getScene().getWindow(); // Lấy Stage từ nút
         stage.close();
     }

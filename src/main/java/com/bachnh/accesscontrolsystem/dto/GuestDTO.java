@@ -4,13 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 @Getter
 @Setter
 @AllArgsConstructor
 public class GuestDTO {
 
-    private String ID;
+    private int ID;
 
     private String guestCode;
 
@@ -20,9 +21,9 @@ public class GuestDTO {
 
     private String cardId;
 
-    private String birthday;
+    private LocalDate birthday;
 
-    private String mobie;
+    private String mobile;
 
     private String email;
 
@@ -30,7 +31,7 @@ public class GuestDTO {
 
     private String status;
 
-    private String createDate;
+    private LocalDateTime createDate;
 
-    private String updateDate;
+    private LocalDateTime updateDate;
 }

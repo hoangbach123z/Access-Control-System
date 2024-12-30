@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -88,10 +89,10 @@ public class RolesController implements Initializable {
         }
         // Tiếp tục load data
         List<Role> roles = roleRepository.findAll();
-//        if (roles.isEmpty()) {}
+        AtomicInteger count = new AtomicInteger(1);
         List<RoleDTO> data = roles.stream()
                 .map(role -> new RoleDTO(
-//                        counter.getAndIncrement(),
+                        count.getAndIncrement(),
                         role.getRoleCode() ,
                         role.getRoleName(),
                         role.getStatus(),
@@ -264,8 +265,16 @@ public class RolesController implements Initializable {
 
                         alert.showAndWait().ifPresent(response -> {
                             if (response == ButtonType.OK) {
-                                System.out.println("Xóa nhân viên: " + getTableView().getItems().get(getIndex()).getRoleCode());
+//                                System.out.println("Xóa nhân viên: " + getTableView().getItems().get(getIndex()).getRoleCode());
+                                Role deleteByRoleCode = roleRepository.findByRoleCode(getTableView().getItems().get(getIndex()).getRoleCode());
+                                roleRepository.delete(deleteByRoleCode);
+                               Platform.runLater(()-> {
+                                   initializeData();
+                                   setupPaginated();
+                               });
+
                             }
+
                         });
                     });
                     actionBox.getChildren().addAll(viewIcon, editIcon, deleteIcon);

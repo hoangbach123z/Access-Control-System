@@ -2,14 +2,12 @@ package com.bachnh.accesscontrolsystem.controller;
 
 
 import com.bachnh.accesscontrolsystem.MFXDemoResourcesLoader;
-import com.bachnh.accesscontrolsystem.config.StageManager;
 import com.bachnh.accesscontrolsystem.data.ViewData;
 import fr.brouillard.oss.cssfx.CSSFX;
 import io.github.palexdev.materialfx.controls.*;
 import io.github.palexdev.materialfx.theming.JavaFXThemes;
 import io.github.palexdev.materialfx.theming.MaterialFXStylesheets;
 import io.github.palexdev.materialfx.theming.UserAgentBuilder;
-import io.github.palexdev.materialfx.theming.base.Theme;
 import io.github.palexdev.materialfx.utils.ScrollUtils;
 import io.github.palexdev.materialfx.utils.ToggleButtonsUtil;
 import io.github.palexdev.materialfx.utils.others.loader.MFXLoader;
@@ -24,7 +22,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
@@ -38,19 +35,14 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import lombok.RequiredArgsConstructor;
 import org.kordamp.ikonli.javafx.FontIcon;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
-import static com.bachnh.accesscontrolsystem.MFXDemoResourcesLoader.loadURL;
 @Component
 @RequiredArgsConstructor
 public class DashboardController implements Initializable {
@@ -147,7 +139,7 @@ public class DashboardController implements Initializable {
             put("AccessControl", new ViewData("/fxml/AccessControl.fxml", "fas-chart-column", "Quản lý ra vào", false));
             put("Employees", new ViewData("/fxml/Employees.fxml", "fas-address-card", "Quản lý nhân viên", false));
             put("Guests", new ViewData("/fxml/Guests.fxml", "fas-building-user", "Quản lý khách", false));
-            put("Deparments", new ViewData("/fxml/Deparments.fxml", "fas-building-columns", "Quản lý Phòng ban", false));
+            put("Departments", new ViewData("/fxml/Departments.fxml", "fas-building-columns", "Quản lý Phòng ban", false));
             put("Roles", new ViewData("/fxml/Roles.fxml", "fas-award", "Quản lý chức vụ", false));
         }};
 

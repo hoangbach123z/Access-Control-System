@@ -1,20 +1,11 @@
 package com.bachnh.accesscontrolsystem.controller;
 
-import com.bachnh.accesscontrolsystem.dto.AccessControlDTO;
 import com.bachnh.accesscontrolsystem.dto.DepartmentDTO;
-import com.bachnh.accesscontrolsystem.dto.RoleDTO;
-import com.bachnh.accesscontrolsystem.model.Device;
-import com.bachnh.accesscontrolsystem.model.Model;
-import com.bachnh.accesscontrolsystem.model.Person;
+import com.bachnh.accesscontrolsystem.entity.Department;
+import com.bachnh.accesscontrolsystem.entity.Role;
+import com.bachnh.accesscontrolsystem.repository.DepartmentRepository;
 import com.bachnh.accesscontrolsystem.utils.TableUtils;
 import io.github.palexdev.materialfx.controls.*;
-import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
-import io.github.palexdev.materialfx.dialogs.MFXGenericDialog;
-import io.github.palexdev.materialfx.dialogs.MFXGenericDialogBuilder;
-import io.github.palexdev.materialfx.dialogs.MFXStageDialog;
-import io.github.palexdev.materialfx.enums.ScrimPriority;
-import io.github.palexdev.materialfx.filter.IntegerFilter;
-import io.github.palexdev.materialfx.filter.StringFilter;
 import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -34,18 +25,22 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 @Component
+@Lazy
 public class DepartmentController implements Initializable {
+
     @FXML
     private TableView<DepartmentDTO> fixedFirstTable;
     @FXML
@@ -64,6 +59,10 @@ public class DepartmentController implements Initializable {
     private ObservableList<DepartmentDTO> masterData; // Danh sách dữ liệu gốc
     private final int ROWS_PER_PAGE = 30;
     private final Map<Integer, ObservableList<DepartmentDTO>> pageCache = new HashMap<>();
+    @Autowired
+    private DepartmentRepository departmentRepository;
+    @Autowired
+    ApplicationContext applicationContext;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -78,10 +77,22 @@ public class DepartmentController implements Initializable {
     }
 
     private void initializeData() {
-        masterData = FXCollections.observableArrayList(
-
-
-        );
+        if (departmentRepository == null){
+            return;
+        }
+        List<Department> departments = departmentRepository.findAll();
+        AtomicInteger count = new AtomicInteger(1);
+        List<DepartmentDTO> data = departments.stream()
+                .map(department -> new DepartmentDTO(
+                        count.getAndIncrement(),
+                        department.getDepartmentCode(),
+                        department.getDepartmentName(),
+                        department.getStatus(),
+                        department.getCreateDate() != null ? department.getCreateDate() : null,
+                        department.getUpdateDate() != null ? department.getUpdateDate() : null
+                ))
+                .toList();
+        masterData = FXCollections.observableArrayList(data);
         setupTable(masterData); // Khởi tạo bảng
     }
 
@@ -141,7 +152,7 @@ public class DepartmentController implements Initializable {
             fixedFirstTable.setMinWidth(210);
             TableColumn<DepartmentDTO, String> IDColumn = new TableColumn<>("ID");
             TableColumn<DepartmentDTO, String> departmentCodeColumn = new TableColumn<>("Mã Phòng ban");
-            IDColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getID()));
+            IDColumn.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getID())));
             departmentCodeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDepartmentCode()));
             departmentCodeColumn.setMinWidth(150);
             fixedFirstTable.getColumns().addAll(IDColumn, departmentCodeColumn);
@@ -158,8 +169,22 @@ public class DepartmentController implements Initializable {
 
             departmentNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDepartmentName()));
             statusColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStatus()));
-            createDateColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCreateDate()));
-            updateDateColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUpdateDate()));
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            createDateColumn.setCellValueFactory(cellData ->
+                    new SimpleStringProperty(
+                            cellData.getValue().getCreateDate() != null
+                                    ? cellData.getValue().getCreateDate().format(formatter)
+                                    : ""
+                    )
+            );
+
+            updateDateColumn.setCellValueFactory(cellData ->
+                    new SimpleStringProperty(
+                            cellData.getValue().getUpdateDate() != null
+                                    ? cellData.getValue().getUpdateDate().format(formatter)
+                                    : ""
+                    )
+            );
 
 
             departmentNameColumn.setMinWidth(150);
@@ -230,7 +255,13 @@ public class DepartmentController implements Initializable {
 
                         alert.showAndWait().ifPresent(response -> {
                             if (response == ButtonType.OK) {
-                                System.out.println("Xóa nhân viên: " + getTableView().getItems().get(getIndex()).getDepartmentCode());
+//                                System.out.println("Xóa nhân viên: " + getTableView().getItems().get(getIndex()).getDepartmentCode());
+                                Department deleteByDepartmentCode = departmentRepository.findByDepartmentCode(getTableView().getItems().get(getIndex()).getDepartmentCode());
+                                departmentRepository.delete(deleteByDepartmentCode);
+                                Platform.runLater(()-> {
+                                    initializeData();
+                                    setupPaginated();
+                                });
                             }
                         });
                     });
@@ -269,6 +300,7 @@ public class DepartmentController implements Initializable {
     private void addDepartment() {
         FXMLLoader loader = new FXMLLoader ();
         loader.setLocation(getClass().getResource("/fxml/AddDepartment.fxml"));
+        loader.setControllerFactory(applicationContext::getBean);
         try {
             loader.load();
         } catch (IOException ex) {
@@ -279,6 +311,10 @@ public class DepartmentController implements Initializable {
         stage.setScene(new Scene(parent));
         stage.initStyle(StageStyle.UTILITY);
         stage.show();
+        stage.setOnHidden(event -> {
+            initializeData();
+            setupPaginated();
+        });
     }
 
 }

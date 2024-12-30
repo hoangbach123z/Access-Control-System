@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class DepartmentDTO {
 
 
-    private String ID;
+    private int ID;
 
 
     private String departmentCode;
@@ -23,8 +23,8 @@ public class DepartmentDTO {
     private String status;
 
 
-    private String createDate;
+    private LocalDateTime createDate;
 
 
-    private String updateDate;
+    private LocalDateTime updateDate;
 }

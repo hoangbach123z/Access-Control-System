@@ -1,8 +1,13 @@
 package com.bachnh.accesscontrolsystem.controller;
 import com.bachnh.accesscontrolsystem.dto.GuestDTO;
 import com.bachnh.accesscontrolsystem.dto.GuestDTO;
+import com.bachnh.accesscontrolsystem.dto.RoleDTO;
+import com.bachnh.accesscontrolsystem.entity.Guest;
+import com.bachnh.accesscontrolsystem.entity.Role;
 import com.bachnh.accesscontrolsystem.model.Device;
 import com.bachnh.accesscontrolsystem.model.Model;
+import com.bachnh.accesscontrolsystem.repository.DepartmentRepository;
+import com.bachnh.accesscontrolsystem.repository.GuestRepository;
 import com.bachnh.accesscontrolsystem.utils.TableUtils;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXPaginatedTableView;
@@ -37,14 +42,16 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 @Component
@@ -69,6 +76,10 @@ public class GuestsController implements Initializable {
     private ObservableList<GuestDTO> masterData; // Danh sách dữ liệu gốc
     private final int ROWS_PER_PAGE = 30;
     private final Map<Integer, ObservableList<GuestDTO>> pageCache = new HashMap<>();
+    @Autowired
+    private GuestRepository guestRepository;
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -83,9 +94,29 @@ public class GuestsController implements Initializable {
     }
 
     private void initializeData() {
-        masterData = FXCollections.observableArrayList(
+        if (guestRepository == null){
+            return;
+        }
+        List<Guest> guests = guestRepository.findAll();
+        AtomicInteger count = new AtomicInteger(1);
+        List<GuestDTO> data = guests.stream()
+                .map(guest -> new GuestDTO(
+                        count.getAndIncrement() ,
+                        guest.getGuestCode() != null ? guest.getGuestCode() : null,
+                        guest.getGuestName() != null ? guest.getGuestName() : null,
+                        guest.getGender() != null ? guest.getGender():null,
+                        guest.getCardId()!= null ? guest.getCardId():null,
+                        guest.getBirthday()!= null ? guest.getBirthday():null,
+                        guest.getMobile()!= null ? guest.getMobile():null,
+                        guest.getEmail()!= null ? guest.getEmail():null,
+                        guest.getAddress()!= null ? guest.getAddress():null,
+                        guest.getStatus()!= null ? guest.getStatus():null,
+                        guest.getCreateDate()!= null ? guest.getCreateDate():null,
+                        guest.getUpdateDate()!= null ? guest.getUpdateDate():null
 
-        );
+                ))
+                .toList();
+        masterData = FXCollections.observableArrayList(data);
         setupTable(masterData); // Khởi tạo bảng
     }
 
@@ -145,7 +176,7 @@ public class GuestsController implements Initializable {
             fixedFirstTable.setMinWidth(210);
             TableColumn<GuestDTO, String> IDColumn = new TableColumn<>("ID");
             TableColumn<GuestDTO, String> guestCodeColumn = new TableColumn<>("Mã Khách");
-            IDColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getID()));
+            IDColumn.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getID())));
             guestCodeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getGuestCode()));
             guestCodeColumn.setMinWidth(150);
             fixedFirstTable.getColumns().addAll(IDColumn, guestCodeColumn);
@@ -167,27 +198,52 @@ public class GuestsController implements Initializable {
 
             guestNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getGuestName()));
             genderColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getGender()));
-            birthdayColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getBirthday()));
+            DateTimeFormatter formatterBirthday = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+//            birthdayColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getBirthday()));
+
+            birthdayColumn.setCellValueFactory(cellData ->
+                    new SimpleStringProperty(
+                            cellData.getValue().getBirthday() != null
+                                    ? cellData.getValue().getBirthday().format(formatterBirthday)
+                                    : ""
+                    )
+            );
+            mobileColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getMobile()));
             cardIdColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCardId()));
             emailColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEmail()));
             addressColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getAddress()));
             statusColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStatus()));
-            createDateColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCreateDate()));
-            updateDateColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUpdateDate()));
 
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            createDateColumn.setCellValueFactory(cellData ->
+                    new SimpleStringProperty(
+                            cellData.getValue().getCreateDate() != null
+                                    ? cellData.getValue().getCreateDate().format(formatter)
+                                    : ""
+                    )
+            );
 
+            updateDateColumn.setCellValueFactory(cellData ->
+                    new SimpleStringProperty(
+                            cellData.getValue().getUpdateDate() != null
+                                    ? cellData.getValue().getUpdateDate().format(formatter)
+                                    : ""
+                    )
+            );
+
+            guestNameColumn.setMinWidth(200);
             genderColumn.setMinWidth(100);
             birthdayColumn.setMinWidth(150);
             mobileColumn.setMinWidth(150);
             cardIdColumn.setMinWidth(150);
-            emailColumn.setMinWidth(200);
+            emailColumn.setMinWidth(250);
             addressColumn.setMinWidth(200);
-            statusColumn.setMinWidth(100);
+            statusColumn.setMinWidth(150);
             createDateColumn.setMinWidth(150);
             updateDateColumn.setMinWidth(150);
 
-            scrollableTable.getColumns().addAll(genderColumn, birthdayColumn, mobileColumn, cardIdColumn,
-                    emailColumn, addressColumn, statusColumn, createDateColumn,
+            scrollableTable.getColumns().addAll(guestNameColumn, mobileColumn, cardIdColumn,
+                    emailColumn,genderColumn, birthdayColumn, addressColumn, statusColumn, createDateColumn,
                     updateDateColumn);
             scrollableTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
             TableUtils.disableSorting(scrollableTable);
@@ -251,7 +307,13 @@ public class GuestsController implements Initializable {
 
                         alert.showAndWait().ifPresent(response -> {
                             if (response == ButtonType.OK) {
-                                System.out.println("Xóa nhân viên: " + getTableView().getItems().get(getIndex()).getGuestCode());
+//                                System.out.println("Xóa nhân viên: " + getTableView().getItems().get(getIndex()).getGuestCode());
+                                Guest deleteByRoleCode = guestRepository.findByGuestCode(getTableView().getItems().get(getIndex()).getGuestCode());
+                                guestRepository.delete(deleteByRoleCode);
+                                Platform.runLater(()-> {
+                                    initializeData();
+                                    setupPaginated();
+                                });
                             }
                         });
                     });
@@ -290,6 +352,7 @@ public class GuestsController implements Initializable {
     private void addGuest() {
         FXMLLoader loader = new FXMLLoader ();
         loader.setLocation(getClass().getResource("/fxml/AddGuest.fxml"));
+        loader.setControllerFactory(applicationContext::getBean);
         try {
             loader.load();
         } catch (IOException ex) {
@@ -300,5 +363,10 @@ public class GuestsController implements Initializable {
         stage.setScene(new Scene(parent));
         stage.initStyle(StageStyle.UTILITY);
         stage.show();
+        stage.setOnHidden(event -> {
+            // Cập nhật lại dữ liệu bảng
+            initializeData();
+            setupPaginated();
+        });
     }
 }

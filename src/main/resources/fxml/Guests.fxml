@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import io.github.palexdev.materialfx.controls.MFXButton?>
-<?import io.github.palexdev.materialfx.controls.MFXPaginatedTableView?>
+<?import io.github.palexdev.materialfx.controls.MFXPagination?>
+<?import java.net.URL?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-
-<?import javafx.scene.control.TableView?>
-<?import io.github.palexdev.materialfx.controls.MFXPagination?>
 <BorderPane fx:id="borderPane" prefHeight="667.0" prefWidth="1026.0" xmlns="http://javafx.com/javafx/21.0.5" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bachnh.accesscontrolsystem.controller.GuestsController">
     <top>
         <HBox alignment="CENTER_RIGHT" prefHeight="43.0" prefWidth="992.0" BorderPane.alignment="CENTER">
             <children>
-                <MFXButton fx:id="addGuestBtn" prefHeight="41.0" prefWidth="105.0" rippleColor="WHITE" style="-fx-background-color: #008001; -fx-font-family: Nunito; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-font-size: 13px;" text="Thêm mới" textFill="#fcfafa">
+                <MFXButton fx:id="addGuestBtn" prefHeight="41.0" prefWidth="105.0" rippleColor="WHITE" styleClass="add-button" text="Thêm mới" textFill="#fcfafa">
                     <HBox.margin>
                         <Insets />
                     </HBox.margin>
@@ -26,9 +25,9 @@
         </HBox>
     </top>
     <center>
-        <HBox fx:id="tableContainer" style="-fx-background-color: #ffffff; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 5,0,0,0); -fx-background-radius: 5px;">
+        <HBox fx:id="tableContainer" styleClass="custom-hbox">
             <children>
-                <TableView fx:id="fixedFirstTable" maxHeight="1.7976931348623157E308" maxWidth="210.0" minWidth="210.0" prefHeight="624.0" prefWidth="210.0" styleClass="column-header" stylesheets="@../css/TableView.css">
+                <TableView fx:id="fixedFirstTable" maxHeight="1.7976931348623157E308" maxWidth="210.0" minWidth="210.0" prefHeight="624.0" prefWidth="210.0">
                     <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                     </columnResizePolicy>
@@ -36,12 +35,12 @@
                         <Insets bottom="12.0" />
                     </HBox.margin>
                 </TableView>
-                <TableView id="scrollableTable" fx:id="scrollableTable" layoutX="10.0" layoutY="10.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="624.0" prefWidth="678.0" styleClass="column-header" stylesheets="@../css/TableView.css" HBox.hgrow="ALWAYS">
+                <TableView id="scrollableTable" fx:id="scrollableTable" layoutX="10.0" layoutY="10.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="624.0" prefWidth="678.0" HBox.hgrow="ALWAYS">
                     <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                     </columnResizePolicy>
                 </TableView>
-                <TableView id="fixedLastTable" fx:id="fixedLastTable" layoutX="291.0" layoutY="10.0" maxHeight="1.7976931348623157E308" maxWidth="120.0" minWidth="120.0" prefHeight="624.0" prefWidth="771.0" styleClass="column-header" stylesheets="@../css/TableView.css">
+                <TableView id="fixedLastTable" fx:id="fixedLastTable" layoutX="291.0" layoutY="10.0" maxHeight="1.7976931348623157E308" maxWidth="120.0" minWidth="120.0" prefHeight="624.0" prefWidth="771.0">
                     <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                     </columnResizePolicy>
@@ -59,4 +58,8 @@
             </children>
         </HBox>
     </bottom>
+   <stylesheets>
+      <URL value="@../css/Common.css" />
+      <URL value="@../css/TableView.css" />
+   </stylesheets>
 </BorderPane>
