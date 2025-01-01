@@ -11,17 +11,17 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 public class EmployeeDT0 {
-    private String ID;
+    private int ID;
 
-    private String employeecode;
+    private String employeeCode;
 
     private String fullname;
 
     private String gender;
 
-    private String birthday;
+    private LocalDate birthday;
 
-    private String cardId;
+    private String cardID;
 
     private String mobile;
 
@@ -29,9 +29,9 @@ public class EmployeeDT0 {
 
     private String address;
 
-//    private String cProfileImage;
-//
-//    private String cQrCode;
+    private String cProfileImage;
+
+    private String cQrCode;
 
     private String departmentName;
 
@@ -39,7 +39,22 @@ public class EmployeeDT0 {
 
     private String status;
 
-    private String createDate;
+    private LocalDateTime createDate;
 
-    private String updateDate;
+    private LocalDateTime updateDate;
+
+    public EmployeeDT0(int ID, String employeeCode, String fullname, String gender, LocalDate birthday, String cardID, String mobile, String email, String address, String status, LocalDateTime createDate, LocalDateTime updateDate) {
+        this.ID = ID;
+        this.employeeCode = employeeCode;
+        this.fullname = fullname;
+        this.gender = gender;
+        this.birthday = birthday;
+        this.cardID = cardID;
+        this.mobile = mobile;
+        this.email = email;
+        this.address = address;
+        this.status = status;
+        this.createDate = createDate;
+        this.updateDate = updateDate;
+    }
 }

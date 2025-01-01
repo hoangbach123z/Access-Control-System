@@ -1,8 +1,8 @@
 package com.bachnh.accesscontrolsystem.controller;
 import com.bachnh.accesscontrolsystem.dto.EmployeeDT0;
-import com.bachnh.accesscontrolsystem.dto.RoleDTO;
-import com.bachnh.accesscontrolsystem.model.Device;
+import com.bachnh.accesscontrolsystem.entity.Employee;
 
+import com.bachnh.accesscontrolsystem.repository.EmployeeRepository;
 import com.bachnh.accesscontrolsystem.utils.TableUtils;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXPagination;
@@ -15,9 +15,7 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -29,19 +27,24 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
-import org.springframework.context.annotation.Scope;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Component
-//@Scope("prototype")
+@Lazy
 public class EmployeesController implements Initializable {
     @FXML
     private TableView<EmployeeDT0> fixedFirstTable;
@@ -63,7 +66,10 @@ public class EmployeesController implements Initializable {
     private final int ROWS_PER_PAGE = 30;
     private final Map<Integer, ObservableList<EmployeeDT0>> pageCache = new HashMap<>();
     private static final Map<String, Parent> fxmlCache = new HashMap<>();
-
+    @Autowired
+    private EmployeeRepository employeeRepository;
+    @Autowired
+    ApplicationContext applicationContext;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -89,16 +95,31 @@ public class EmployeesController implements Initializable {
     }
 
     private void initializeData() {
+        if (employeeRepository ==null){
+            return ;
+        }
         Task<ObservableList<EmployeeDT0>> loadDataTask = new Task<>() {
+             List<Employee> employees = employeeRepository.findAll();
+             AtomicInteger count = new AtomicInteger(1);
             @Override
             protected ObservableList<EmployeeDT0> call() {
-                // Giả lập tải dữ liệu từ nguồn
-                ObservableList<EmployeeDT0> data = FXCollections.observableArrayList(
-//                        new EmployeeDT0("1", "EMP001", "Nguyễn Văn A", "Nam", "01/01/1990", "0912345678", "123456789", "adsadsadsadsadsa@gmail.com", "Hà Nội", "Phòng IT", "Nhân viên", "Hoạt động", "01/01/2023", "02/01/2023")
-
+                return FXCollections.observableArrayList(
+                        employees.stream()
+                                .map(employee -> new EmployeeDT0(
+                                        count.getAndIncrement() ,
+                                        employee.getEmployeecode() != null ? employee.getEmployeecode() : null,
+                                        employee.getFullname() != null ? employee.getFullname() : null,
+                                        employee.getGender() != null ? employee.getGender() : null,
+                                        employee.getBirthday() != null ? employee.getBirthday() : null,
+                                        employee.getCardId() != null ? employee.getCardId() : null,
+                                        employee.getMobile() != null ? employee.getMobile() : null,
+                                        employee.getEmail() != null ? employee.getEmail() : null,
+                                        employee.getAddress() != null ? employee.getAddress() : null,
+                                        employee.getStatus() != null ? employee.getStatus() : null,
+                                        employee.getCreateDate() != null ? employee.getCreateDate() : null,
+                                        employee.getUpdateDate() != null ? employee.getUpdateDate() : null))
+                                .toList()
                 );
-
-                return data;
             }
 
         };
@@ -166,7 +187,6 @@ public class EmployeesController implements Initializable {
                 if (masterData == null || masterData.isEmpty()) {
                     return FXCollections.observableArrayList();
                 }
-
                 int fromIndex = (pageIndex - 1) * ROWS_PER_PAGE;
                 int toIndex = Math.min(fromIndex + ROWS_PER_PAGE, masterData.size());
                 return FXCollections.observableArrayList(masterData.subList(fromIndex, toIndex));
@@ -198,8 +218,8 @@ public class EmployeesController implements Initializable {
                         fixedFirstTable.setMinWidth(210);
                         TableColumn<EmployeeDT0, String> IDColumn = new TableColumn<>("ID");
                         TableColumn<EmployeeDT0, String> employeeCodeColumn = new TableColumn<>("Mã Nhân viên");
-                        IDColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getID()));
-                        employeeCodeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEmployeecode()));
+                        IDColumn.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getID())));
+                        employeeCodeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEmployeeCode()));
                         employeeCodeColumn.setMinWidth(150);
                         fixedFirstTable.getColumns().addAll(IDColumn, employeeCodeColumn);
                         fixedFirstTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -222,16 +242,37 @@ public class EmployeesController implements Initializable {
 
                         fullnameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getFullname()));
                         genderColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getGender()));
-                        birthdayColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getBirthday()));
+                        DateTimeFormatter formatterBirthday = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+                        birthdayColumn.setCellValueFactory(cellData ->
+                                new SimpleStringProperty(
+                                        cellData.getValue().getBirthday() != null
+                                                ? cellData.getValue().getBirthday().format(formatterBirthday)
+                                                : ""
+                                )
+                        );
                         mobileColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getMobile()));
-                        cardIdColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCardId()));
+                        cardIdColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCardID()));
                         emailColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEmail()));
                         addressColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getAddress()));
                         departmentNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDepartmentName()));
                         roleNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRoleName()));
                         statusColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStatus()));
-                        createDateColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCreateDate()));
-                        updateDateColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUpdateDate()));
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+                        createDateColumn.setCellValueFactory(cellData ->
+                                new SimpleStringProperty(
+                                        cellData.getValue().getCreateDate() != null
+                                                ? cellData.getValue().getCreateDate().format(formatter)
+                                                : ""
+                                )
+                        );
+
+                        updateDateColumn.setCellValueFactory(cellData ->
+                                new SimpleStringProperty(
+                                        cellData.getValue().getUpdateDate() != null
+                                                ? cellData.getValue().getUpdateDate().format(formatter)
+                                                : ""
+                                )
+                        );
 
                         fullnameColumn.setMinWidth(200);
                         genderColumn.setMinWidth(100);
@@ -245,7 +286,6 @@ public class EmployeesController implements Initializable {
                         statusColumn.setMinWidth(100);
                         createDateColumn.setMinWidth(150);
                         updateDateColumn.setMinWidth(150);
-
                         scrollableTable.getColumns().addAll(fullnameColumn, genderColumn, birthdayColumn, mobileColumn, cardIdColumn,
                                 emailColumn, addressColumn, departmentNameColumn, roleNameColumn, statusColumn, createDateColumn,
                                 updateDateColumn);
@@ -260,10 +300,8 @@ public class EmployeesController implements Initializable {
                         Callback<TableColumn<EmployeeDT0, Void>, TableCell<EmployeeDT0, Void>> cellFactory = (TableColumn<EmployeeDT0, Void> param) -> {
                             return new TableCell<>() {
                                 private final HBox actionBox = new HBox(10);
-
                                 {
                                     actionBox.setAlignment(Pos.CENTER);
-
                                     // Icon xem chi tiết
                                     MFXFontIcon viewIcon = new MFXFontIcon("fas-eye", 18);
                                     viewIcon.setStyle("-fx-cursor: hand;");
@@ -374,6 +412,7 @@ public class EmployeesController implements Initializable {
                 } else {
                     FXMLLoader loader = new FXMLLoader();
                     loader.setLocation(getClass().getResource(fxmlPath));
+                    loader.setControllerFactory(applicationContext::getBean);
                     parent = loader.load();
                     FXMLCache.put(fxmlPath, loader);
                 }

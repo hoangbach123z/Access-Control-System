@@ -8,36 +8,32 @@
 <?import io.github.palexdev.mfxcore.controls.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="600.0" prefWidth="500.0" styleClass="anchor-background" stylesheets="@../css/Common.css" xmlns="http://javafx.com/javafx/21.0.5" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bachnh.accesscontrolsystem.controller.AddEmployeeController">
+<AnchorPane prefHeight="582.0" prefWidth="497.0" styleClass="anchor-background" stylesheets="@../css/Common.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bachnh.accesscontrolsystem.controller.AddEmployeeController">
    <children>
       <Label layoutX="14.0" layoutY="14.0" styleClass="header-label" text="Thêm nhân viên" />
-      <Label layoutX="14.0" layoutY="128.0" styleClass="sub-header-label" text="Họ và tên" />
-      <MFXTextField floatMode="DISABLED" layoutX="14.0" layoutY="157.0" prefHeight="38.0" prefWidth="215.0" promptText="Họ và tên" />
-      <Label layoutX="14.0" layoutY="205.0" styleClass="sub-header-label" text="Ngày sinh" />
-      <MFXDatePicker layoutX="14.0" layoutY="237.0" prefHeight="38.0" prefWidth="215.0" promptText="Ngày sinh" />
-      <Label layoutX="14.0" layoutY="288.0" prefHeight="18.0" prefWidth="164.0" styleClass="sub-header-label" text="CCCD/CMND/Hộ chiếu" />
-      <MFXTextField floatMode="DISABLED" layoutX="14.0" layoutY="317.0" prefHeight="38.0" prefWidth="215.0" promptText="CCCD/CMND/Hộ chiếu" />
-      <Label layoutX="271.0" layoutY="56.0" styleClass="sub-header-label" text="Số điện thoại" />
-      <MFXTextField floatMode="DISABLED" layoutX="271.0" layoutY="85.0" prefHeight="38.0" prefWidth="215.0" promptText="Số điện thoại" />
-      <Label layoutX="14.0" layoutY="443.0" styleClass="sub-header-label" text="Giới tính" />
-      <Label layoutX="271.0" layoutY="127.0" prefHeight="18.0" prefWidth="105.0" styleClass="sub-header-label" text="Email" />
-      <MFXTextField floatMode="DISABLED" layoutX="271.0" layoutY="156.0" prefHeight="38.0" prefWidth="215.0" promptText="Email" />
-      <Label layoutX="271.0" layoutY="201.0" styleClass="sub-header-label" text="Địa chỉ liên hệ" />
-      <MFXTextField floatMode="DISABLED" layoutX="271.0" layoutY="230.0" prefHeight="38.0" prefWidth="215.0" promptText="Địa chỉ liên hệ" />
-      <Label layoutX="271.0" layoutY="277.0" styleClass="sub-header-label" text="Phòng ban" />
-      <MFXComboBox floatMode="DISABLED" layoutX="271.0" layoutY="310.0" prefHeight="38.0" prefWidth="215.0" promptText="Phòng ban" />
-      <Label layoutX="271.0" layoutY="361.0" styleClass="sub-header-label" text="Chức vụ" />
-      <MFXComboBox floatMode="DISABLED" layoutX="271.0" layoutY="390.0" prefHeight="38.0" prefWidth="215.0" promptText="Chức vụ" />
-      <Label layoutX="271.0" layoutY="440.0" styleClass="sub-header-label" text="Ảnh chân dung" />
-      <MFXButton layoutX="297.0" layoutY="561.0" prefHeight="32.0" prefWidth="76.0" styleClass="cancel-button" text="Hủy" />
-      <MFXButton layoutX="397.0" layoutY="561.0" prefHeight="32.0" prefWidth="76.0" styleClass="save-button" text="Lưu" />
-      <Label layoutX="14.0" layoutY="361.0" styleClass="sub-header-label" text="Quốc tịch" />
-      <MFXTextField floatMode="DISABLED" layoutX="14.0" layoutY="390.0" prefHeight="38.0" prefWidth="215.0" promptText="Quốc tịch" />
-      <Label layoutX="14.0" layoutY="52.0" styleClass="sub-header-label" text="Mã nhân viên" />
-      <MFXTextField floatMode="DISABLED" layoutX="14.0" layoutY="81.0" prefHeight="38.0" prefWidth="215.0" promptText="Mã nhân viên" />
-      <MFXRadioButton layoutX="30.0" layoutY="478.0" text="Nam" />
-      <MFXRadioButton layoutX="122.0" layoutY="478.0" text="Nữ" />
-      <MFXButton layoutX="277.0" layoutY="472.0" text="Chọn ảnh" />
-      <Label layoutX="369.0" layoutY="479.0" text="No file chosen" />
+      <Label layoutX="14.0" layoutY="72.0" styleClass="sub-header-label" text="Họ và tên" />
+      <MFXTextField fx:id="txtEmpName" floatMode="DISABLED" layoutX="14.0" layoutY="101.0" prefHeight="38.0" prefWidth="215.0" promptText="Họ và tên" />
+      <Label layoutX="14.0" layoutY="149.0" styleClass="sub-header-label" text="Ngày sinh" />
+      <MFXDatePicker fx:id="birthdayDatePicker" layoutX="14.0" layoutY="181.0" prefHeight="38.0" prefWidth="215.0" promptText="Ngày sinh" />
+      <Label layoutX="14.0" layoutY="232.0" prefHeight="18.0" prefWidth="164.0" styleClass="sub-header-label" text="CCCD/CMND/Hộ chiếu" />
+      <MFXTextField fx:id="txtCardID" floatMode="DISABLED" layoutX="14.0" layoutY="261.0" prefHeight="38.0" prefWidth="215.0" promptText="CCCD/CMND/Hộ chiếu" />
+      <Label layoutX="18.0" layoutY="315.0" styleClass="sub-header-label" text="Giới tính" />
+      <Label layoutX="271.0" layoutY="71.0" prefHeight="18.0" prefWidth="105.0" styleClass="sub-header-label" text="Email" />
+      <MFXTextField fx:id="txtEmail" floatMode="DISABLED" layoutX="269.0" layoutY="101.0" prefHeight="38.0" prefWidth="215.0" promptText="Email" />
+      <Label layoutX="266.0" layoutY="148.0" styleClass="sub-header-label" text="Địa chỉ liên hệ" />
+      <MFXTextField fx:id="txtAddress" floatMode="DISABLED" layoutX="266.0" layoutY="181.0" prefHeight="38.0" prefWidth="215.0" promptText="Địa chỉ liên hệ" />
+      <Label layoutX="266.0" layoutY="232.0" styleClass="sub-header-label" text="Phòng ban" />
+      <MFXComboBox fx:id="cbbDepartment" floatMode="DISABLED" layoutX="266.0" layoutY="261.0" prefHeight="38.0" prefWidth="215.0" promptText="Phòng ban" />
+      <Label layoutX="269.0" layoutY="315.0" styleClass="sub-header-label" text="Chức vụ" />
+      <MFXComboBox fx:id="cbbRole" floatMode="DISABLED" layoutX="269.0" layoutY="344.0" prefHeight="38.0" prefWidth="215.0" promptText="Chức vụ" />
+      <Label layoutX="272.0" layoutY="393.0" styleClass="sub-header-label" text="Ảnh chân dung" />
+      <MFXButton fx:id="cancelBtn" layoutX="296.0" layoutY="531.0" prefHeight="32.0" prefWidth="76.0" styleClass="cancel-button" text="Hủy" />
+      <MFXButton fx:id="saveBtn" layoutX="397.0" layoutY="531.0" prefHeight="32.0" prefWidth="76.0" styleClass="save-button" text="Lưu" />
+      <Label layoutX="14.0" layoutY="393.0" styleClass="sub-header-label" text="Số điện thoại" />
+      <MFXTextField fx:id="txtPhoneNumber" floatMode="DISABLED" layoutX="14.0" layoutY="422.0" prefHeight="38.0" prefWidth="215.0" promptText="Số điện thoại" />
+      <MFXRadioButton fx:id="txtMale" layoutX="36.0" layoutY="350.0" text="Nam" />
+      <MFXRadioButton fx:id="txtFemale" layoutX="128.0" layoutY="350.0" text="Nữ" />
+      <MFXButton fx:id="choosenBtn" layoutX="271.0" layoutY="428.0" text="Chọn ảnh" />
+      <Label fx:id="lblFileChoosen" layoutX="370.0" layoutY="432.0" text="No file chosen" />
    </children>
 </AnchorPane>
