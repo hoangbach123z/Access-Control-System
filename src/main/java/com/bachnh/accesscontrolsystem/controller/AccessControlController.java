@@ -27,6 +27,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.springframework.aot.generate.AccessControl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -60,6 +61,7 @@ public class AccessControlController implements Initializable {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
     @Autowired private AccessControlRepository accessControlRepository;
+    @Autowired private ApplicationContext applicationContext;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -277,7 +279,7 @@ public class AccessControlController implements Initializable {
             fixedLastTable.getColumns().add(actionColumn);
             fixedLastTable.setMinWidth(120);
             fixedLastTable.setMaxWidth(120);
-            fixedLastTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+            fixedLastTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
             // Hiển thị khi bảng không có dữ liệu
             Label label = new Label("");
@@ -293,6 +295,7 @@ public class AccessControlController implements Initializable {
     private void openScanQR() {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/fxml/ScanQR.fxml"));
+        loader.setControllerFactory(applicationContext::getBean);
         try {
             loader.load();
         } catch (IOException ex) {

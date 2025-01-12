@@ -11,6 +11,6 @@ import java.io.File;
 public interface IQRCodeService {
     String generateQRCode(String employeeCode);
     String saveProfileImage(String employeeCode , File selectedFiled);
-    ResponseData<QrCodeResponse> readQRCode(QrCodeContent request);
+    String readQRCode(String content);
 
 }

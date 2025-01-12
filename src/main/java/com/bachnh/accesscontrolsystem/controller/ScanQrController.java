@@ -1,5 +1,6 @@
 package com.bachnh.accesscontrolsystem.controller;
 
+import com.bachnh.accesscontrolsystem.service.IQRCodeService;
 import com.github.sarxos.webcam.Webcam;
 import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
@@ -18,6 +19,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import java.awt.Dimension;
@@ -28,7 +30,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 @Component
-@Lazy
 public class ScanQrController implements Initializable {
     @FXML
     private AnchorPane scanQrContainer;
@@ -39,12 +40,14 @@ public class ScanQrController implements Initializable {
     private ImageView profileImage;
     @FXML
     private Label resultLabel;
+    @Autowired
+    IQRCodeService iqrCodeService;
     private volatile boolean running = true;
     private volatile String lastQRResult = "";
     private static final int SCAN_INTERVAL = 100;
     private Rectangle focusRect;
     private long lastScanTime = 0;
-    private static final long COOLDOWN_PERIOD = 3000;
+    private static final long COOLDOWN_PERIOD = 5000;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initializeWebcam();
@@ -223,12 +226,13 @@ public class ScanQrController implements Initializable {
     }
 
     private void handleNewQRCode(String qrContent) {
+        String message = iqrCodeService.readQRCode(qrContent);
         Platform.runLater(() -> {
-            resultLabel.setText("Kết quả: " + qrContent);
+            resultLabel.setText("Kết quả: " + message);
             // Có thể thêm thông báo về thời gian chờ
-            new Timeline(new KeyFrame(Duration.millis(COOLDOWN_PERIOD), e -> {
-                resultLabel.setText("Sẵn sàng quét mã QR tiếp theo...");
-            })).play();
+//            new Timeline(new KeyFrame(Duration.millis(COOLDOWN_PERIOD), e -> {
+//                resultLabel.setText("Sẵn sàng quét mã QR tiếp theo...");
+//            })).play();
         });
         System.out.println(qrContent);
 

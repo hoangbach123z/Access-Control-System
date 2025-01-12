@@ -3,6 +3,12 @@ package com.bachnh.accesscontrolsystem.service.impl;
 import com.bachnh.accesscontrolsystem.data.ResponseData;
 import com.bachnh.accesscontrolsystem.dto.request.QrCodeContent;
 import com.bachnh.accesscontrolsystem.dto.response.QrCodeResponse;
+import com.bachnh.accesscontrolsystem.entity.Accesscontrol;
+import com.bachnh.accesscontrolsystem.entity.Employee;
+import com.bachnh.accesscontrolsystem.entity.Guest;
+import com.bachnh.accesscontrolsystem.repository.AccessControlRepository;
+import com.bachnh.accesscontrolsystem.repository.EmployeeRepository;
+import com.bachnh.accesscontrolsystem.repository.GuestRepository;
 import com.bachnh.accesscontrolsystem.service.IQRCodeService;
 import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
@@ -18,15 +24,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+import java.security.MessageDigest;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 public class QRCodeServiceImpl implements IQRCodeService {
@@ -35,6 +44,10 @@ public class QRCodeServiceImpl implements IQRCodeService {
     String secretKey;
     @Autowired ImageService  imageService;
     @Autowired AESService aesService;
+    @Autowired GuestRepository guestRepository;
+    @Autowired EmployeeRepository employeeRepository;
+    @Autowired AccessControlRepository accessControlRepository;
+
 //    private final String uploadDirectory = "resources\\QRCode";
 //    src/main/resources/static/images
     private final String empQRDirectory = "D:/Resources/Images/Employees/QRCode";
@@ -46,8 +59,6 @@ public class QRCodeServiceImpl implements IQRCodeService {
     public String generateQRCode(String employeeCode) {
         String logPrefix = "generate QRCode Image";
         log.info(logPrefix + " ------ START ------");
-//        ResponseData<DocRenderResponse> responseData = new ResponseData<>();
-//        DocRenderResponse data = new DocRenderResponse();
         String uploadDirectory = employeeCode.matches("^[0-9].*") ? guestQRDirectory : empQRDirectory;
         String objectUrl = "";
         try {
@@ -138,22 +149,60 @@ public class QRCodeServiceImpl implements IQRCodeService {
         return objectUrl;
     };
     @Override
-    public ResponseData<QrCodeResponse> readQRCode(QrCodeContent request) {
-        ResponseData<QrCodeResponse> responseData = new ResponseData<>();
-        QrCodeResponse data = new QrCodeResponse();
+    public String readQRCode(String content) {
+        String logPrefix = "Read QRCode Image";
+        log.info(logPrefix + " ------ START ------");
         try {
-            byte[] imageByte = Base64.getDecoder().decode(request.getDataBase64());
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(imageByte);
-            BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(
-                    new BufferedImageLuminanceSource(ImageIO.read(byteArrayInputStream))
-            ));
-            Result qrCodeResult = new MultiFormatReader().decode(binaryBitmap);
-            data.setContent(qrCodeResult.getText());
-            responseData.setData(data);
-        } catch (IOException | NotFoundException e) {
+            String code = aesService.decrypt(content,secretKey);
+            String type = code.matches("^[0-9].*") ? "GUEST" : "EMPLOYEE";
+            if (type.equals("GUEST")) {
+                Accesscontrol guestCheckedIn = accessControlRepository.findByCodeAndStatus(code,"IN");
+                if (Objects.isNull(guestCheckedIn)) {
+                    Guest guest = guestRepository.findByGuestCode(code);
+                    Accesscontrol data = new Accesscontrol();
+                    data.setCode(code);
+                    data.setFullName(guest.getGuestName());
+                    data.setGender(guest.getGender());
+                    data.setDepartmentName("");
+                    data.setRoleName("");
+                    data.setType(type);
+                    data.setStatus("IN");
+                    data.setCheckIn(LocalDateTime.now());
+                    accessControlRepository.save(data);
+                    return "SUCCCESS";
+                }
+                guestCheckedIn.setCheckOut(LocalDateTime.now());
+                guestCheckedIn.setStatus("OUT");
+                accessControlRepository.save(guestCheckedIn);
+                return "SUCCCESS";
+            }
+
+            if (type.equals("EMPLOYEE")) {
+                Accesscontrol empCheckedIn = accessControlRepository.findByCodeAndStatus(code,"IN");
+               if (Objects.isNull(empCheckedIn)) {
+                   Employee employee = employeeRepository.findByEmployeecode(code);
+                   Accesscontrol data = new Accesscontrol();
+                   data.setCode(code);
+                   data.setFullName(employee.getFullname());
+                   data.setGender(employee.getGender());
+                   data.setDepartmentName(employee.getDepartmentCode());
+                   data.setRoleName(employee.getRoleCode());
+                   data.setType(type);
+                   data.setStatus("IN");
+                   data.setCheckIn(LocalDateTime.now());
+                   accessControlRepository.save(data);
+                   return "SUCCCESS";
+               }
+               empCheckedIn.setCheckOut(LocalDateTime.now());
+               empCheckedIn.setStatus("OUT");
+               accessControlRepository.save(empCheckedIn);
+            }
+
+        } catch (Exception e) {
             log.error("getContentFromQR exception {}", e.getMessage());
 //            throw  new BaseException(CommonErrorCode.INTERNAL_SERVER_ERROR);
         }
-        return responseData;
+        return null;
     }
+
 }
