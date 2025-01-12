@@ -1,7 +1,9 @@
 package com.bachnh.accesscontrolsystem.controller;
 import com.bachnh.accesscontrolsystem.dto.EmployeeDT0;
-import com.bachnh.accesscontrolsystem.entity.Employee;
 
+import com.bachnh.accesscontrolsystem.entity.Employee;
+import com.bachnh.accesscontrolsystem.model.EmployeeModel;
+import com.bachnh.accesscontrolsystem.repository.CommonAdapter;
 import com.bachnh.accesscontrolsystem.repository.EmployeeRepository;
 import com.bachnh.accesscontrolsystem.utils.TableUtils;
 import io.github.palexdev.materialfx.controls.MFXButton;
@@ -9,9 +11,11 @@ import io.github.palexdev.materialfx.controls.MFXPagination;
 import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -26,7 +30,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.util.Callback;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
@@ -35,133 +38,83 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Component
 @Lazy
 public class EmployeesController implements Initializable {
-    @FXML
-    private TableView<EmployeeDT0> fixedFirstTable;
-    @FXML
-    private TableView<EmployeeDT0> scrollableTable;
-    @FXML
-    private TableView<EmployeeDT0> fixedLastTable;
-    @FXML
-    private HBox tableContainer;
-    @FXML
-    private BorderPane borderPane;
-    @FXML
-    private MFXButton addEmployeeBtn;
-    @FXML
-    private MFXPagination paginator;
+    private static final int ROWS_PER_PAGE = 30;
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+
+    @FXML private TableView<EmployeeDT0> fixedFirstTable;
+    @FXML private TableView<EmployeeDT0> scrollableTable;
+    @FXML private TableView<EmployeeDT0> fixedLastTable;
+    @FXML private HBox tableContainer;
+    @FXML private BorderPane borderPane;
+    @FXML private MFXButton addEmployeeBtn;
+    @FXML private MFXPagination paginator;
 
     private FXMLLoader loader;
-    private ObservableList<EmployeeDT0> masterData; // Danh sách dữ liệu gốc
-    private final int ROWS_PER_PAGE = 30;
-    private final Map<Integer, ObservableList<EmployeeDT0>> pageCache = new HashMap<>();
-    private static final Map<String, Parent> fxmlCache = new HashMap<>();
-    @Autowired
-    private EmployeeRepository employeeRepository;
-    @Autowired
-    ApplicationContext applicationContext;
+    private ObservableList<EmployeeDT0> masterData;
+
+    @Autowired private EmployeeRepository employeeRepository;
+    @Autowired private CommonAdapter commonAdapter;
+    @Autowired private ApplicationContext applicationContext;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Task<Void> initTask = new Task<>() {
-            @Override
-            protected Void call() {
-                initializeData();
-                addEmployee();
-                return null;
-            }
-        };
+        initializeData();
+        setupPaginated();
+        Platform.runLater(this::syncTables);
+//        addEmployeeBtn.setOnAction(event -> handleAddAction());
+        addEmployeeBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> addEmployee());;
 
-        initTask.setOnSucceeded(e -> {
-            setupPaginated();
-            Platform.runLater(() -> {
-                TableUtils.syncScrollBars(fixedFirstTable, scrollableTable, fixedLastTable);
-                TableUtils.synchronizeTableSelection(fixedFirstTable, scrollableTable, fixedLastTable);
-            });
-//            addEmployee();
-        });
+    }
 
-        new Thread(initTask).start();
+    private void syncTables() {
+        TableUtils.syncScrollBars(fixedFirstTable, scrollableTable, fixedLastTable);
+        TableUtils.synchronizeTableSelection(fixedFirstTable, scrollableTable, fixedLastTable);
     }
 
     private void initializeData() {
-        if (employeeRepository ==null){
-            return ;
-        }
-        Task<ObservableList<EmployeeDT0>> loadDataTask = new Task<>() {
-             List<Employee> employees = employeeRepository.findAll();
-             AtomicInteger count = new AtomicInteger(1);
-            @Override
-            protected ObservableList<EmployeeDT0> call() {
-                return FXCollections.observableArrayList(
-                        employees.stream()
-                                .map(employee -> new EmployeeDT0(
-                                        count.getAndIncrement() ,
-                                        employee.getEmployeecode() != null ? employee.getEmployeecode() : null,
-                                        employee.getFullname() != null ? employee.getFullname() : null,
-                                        employee.getGender() != null ? employee.getGender() : null,
-                                        employee.getBirthday() != null ? employee.getBirthday() : null,
-                                        employee.getCardId() != null ? employee.getCardId() : null,
-                                        employee.getMobile() != null ? employee.getMobile() : null,
-                                        employee.getEmail() != null ? employee.getEmail() : null,
-                                        employee.getAddress() != null ? employee.getAddress() : null,
-                                        employee.getStatus() != null ? employee.getStatus() : null,
-                                        employee.getCreateDate() != null ? employee.getCreateDate() : null,
-                                        employee.getUpdateDate() != null ? employee.getUpdateDate() : null))
-                                .toList()
-                );
-            }
+        if (commonAdapter == null) return;
 
-        };
+        List<EmployeeModel> employees = commonAdapter.getListEmployees();
+        AtomicInteger count = new AtomicInteger(1);
 
-        loadDataTask.setOnSucceeded(e -> {
-            masterData = loadDataTask.getValue();
-            if (masterData != null) {
-                Platform.runLater(() -> {
-                    setupTable(masterData);
-                    setupPaginated();
-                    TableUtils.syncScrollBars(fixedFirstTable, scrollableTable, fixedLastTable);
-                    TableUtils.synchronizeTableSelection(fixedFirstTable, scrollableTable, fixedLastTable);
-//                    addEmployee();
-                    // Xóa loading indicator
-                    borderPane.setCenter(tableContainer);
-                });
-            }
-        });
+        List<EmployeeDT0> data = employees.stream()
+                .map(employee -> new EmployeeDT0(
+                        count.getAndIncrement(),
+                        (employee.getEmployeeCode()),
+                        (employee.getFullname()),
+                        (employee.getGender()),
+                        employee.getBirthday(),
+                        (employee.getCardID()),
+                        (employee.getMobile()),
+                        (employee.getEmail()),
+                        (employee.getAddress()),
+                        (employee.getDepartmentName()),
+                        (employee.getRoleName()),
+                        (employee.getStatus()),
+                        employee.getCreateDate(),
+                        employee.getUpdateDate()
+                ))
+                .toList();
 
-        loadDataTask.setOnFailed(e -> {
-            Throwable exception = loadDataTask.getException();
-            Platform.runLater(() -> {
-                Label errorLabel = new Label("Không thể tải dữ liệu. Vui lòng thử lại sau.");
-                errorLabel.setStyle("-fx-text-fill: red; -fx-font-size: 14px;");
-                borderPane.setCenter(errorLabel);
-                if (exception != null) {
-                    exception.printStackTrace();
-                }
-            });
-        });
-
-        Thread thread = new Thread(loadDataTask);
-        thread.setDaemon(true); // Đảm bảo thread sẽ dừng khi ứng dụng đóng
-        thread.start();
+        masterData = FXCollections.observableArrayList(data);
+        setupTable(masterData);
     }
-
+    
     private void setupPaginated() {
-        // Kiểm tra nếu masterData không tồn tại hoặc không có dữ liệu
         if (masterData == null || masterData.isEmpty()) {
-            paginator.setMaxPage(1); // Đặt số trang tối thiểu là 1
+            paginator.setMaxPage(1);
             paginator.setCurrentPage(1);
-            updateTableData(1); // Đảm bảo bảng hiển thị dữ liệu rỗng
+            updateTableData(1);
             return;
         }
 
@@ -169,280 +122,240 @@ public class EmployeesController implements Initializable {
         paginator.setMaxPage(totalPages);
         paginator.setCurrentPage(1);
 
-        // Xử lý sự kiện khi chuyển trang
         paginator.currentPageProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 updateTableData(newValue.intValue());
             }
         });
 
-        // Hiển thị dữ liệu trang đầu tiên
         updateTableData(1);
     }
 
     private void updateTableData(int pageIndex) {
-        Task<ObservableList<EmployeeDT0>> updateTask = new Task<>() {
-            @Override
-            protected ObservableList<EmployeeDT0> call() {
-                if (masterData == null || masterData.isEmpty()) {
-                    return FXCollections.observableArrayList();
-                }
-                int fromIndex = (pageIndex - 1) * ROWS_PER_PAGE;
-                int toIndex = Math.min(fromIndex + ROWS_PER_PAGE, masterData.size());
-                return FXCollections.observableArrayList(masterData.subList(fromIndex, toIndex));
-            }
-        };
+        if (masterData == null || masterData.isEmpty()) {
+            clearTables();
+            return;
+        }
 
-        updateTask.setOnSucceeded(e -> {
-            ObservableList<EmployeeDT0> pageData = updateTask.getValue();
-            Platform.runLater(() -> {
-                fixedFirstTable.getItems().clear();
-                scrollableTable.getItems().clear();
-                fixedLastTable.getItems().clear();
+        int fromIndex = (pageIndex - 1) * ROWS_PER_PAGE;
+        int toIndex = Math.min(fromIndex + ROWS_PER_PAGE, masterData.size());
 
-                fixedFirstTable.setItems(pageData);
-                scrollableTable.setItems(pageData);
-                fixedLastTable.setItems(pageData);
-            });
+        ObservableList<EmployeeDT0> pageData = FXCollections.observableArrayList(
+                masterData.subList(fromIndex, toIndex)
+        );
+
+        Platform.runLater(() -> {
+            clearTables();
+            setTableData(pageData);
         });
+    }
 
-        new Thread(updateTask).start();
+    private void clearTables() {
+        fixedFirstTable.getItems().clear();
+        scrollableTable.getItems().clear();
+        fixedLastTable.getItems().clear();
+    }
+
+    private void setTableData(ObservableList<EmployeeDT0> data) {
+        fixedFirstTable.setItems(data);
+        scrollableTable.setItems(data);
+        fixedLastTable.setItems(data);
     }
 
     private void setupTable(ObservableList<EmployeeDT0> data) {
-        Task<Void> setupTask = new Task<>() {
-            @Override
-            protected Void call() {
-                Platform.runLater(() -> {
-                    if (fixedFirstTable.getColumns().isEmpty()) {
-                        fixedFirstTable.setMinWidth(210);
-                        TableColumn<EmployeeDT0, String> IDColumn = new TableColumn<>("ID");
-                        TableColumn<EmployeeDT0, String> employeeCodeColumn = new TableColumn<>("Mã Nhân viên");
-                        IDColumn.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getID())));
-                        employeeCodeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEmployeeCode()));
-                        employeeCodeColumn.setMinWidth(150);
-                        fixedFirstTable.getColumns().addAll(IDColumn, employeeCodeColumn);
-                        fixedFirstTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-                        TableUtils.disableSorting(fixedFirstTable);
-                    }
-
-                    if (scrollableTable.getColumns().isEmpty()) {
-                        TableColumn<EmployeeDT0, String> fullnameColumn = new TableColumn<>("Họ và Tên");
-                        TableColumn<EmployeeDT0, String> genderColumn = new TableColumn<>("Giới tính");
-                        TableColumn<EmployeeDT0, String> birthdayColumn = new TableColumn<>("Ngày sinh");
-                        TableColumn<EmployeeDT0, String> mobileColumn = new TableColumn<>("Số điện thoại");
-                        TableColumn<EmployeeDT0, String> cardIdColumn = new TableColumn<>("CMND/CCCD");
-                        TableColumn<EmployeeDT0, String> emailColumn = new TableColumn<>("Email");
-                        TableColumn<EmployeeDT0, String> addressColumn = new TableColumn<>("Địa chỉ");
-                        TableColumn<EmployeeDT0, String> departmentNameColumn = new TableColumn<>("Phòng ban");
-                        TableColumn<EmployeeDT0, String> roleNameColumn = new TableColumn<>("Vị trí");
-                        TableColumn<EmployeeDT0, String> statusColumn = new TableColumn<>("Trạng thái");
-                        TableColumn<EmployeeDT0, String> createDateColumn = new TableColumn<>("Ngày tạo");
-                        TableColumn<EmployeeDT0, String> updateDateColumn = new TableColumn<>("Ngày cập nhật");
-
-                        fullnameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getFullname()));
-                        genderColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getGender()));
-                        DateTimeFormatter formatterBirthday = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-                        birthdayColumn.setCellValueFactory(cellData ->
-                                new SimpleStringProperty(
-                                        cellData.getValue().getBirthday() != null
-                                                ? cellData.getValue().getBirthday().format(formatterBirthday)
-                                                : ""
-                                )
-                        );
-                        mobileColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getMobile()));
-                        cardIdColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCardID()));
-                        emailColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEmail()));
-                        addressColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getAddress()));
-                        departmentNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDepartmentName()));
-                        roleNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRoleName()));
-                        statusColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStatus()));
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-                        createDateColumn.setCellValueFactory(cellData ->
-                                new SimpleStringProperty(
-                                        cellData.getValue().getCreateDate() != null
-                                                ? cellData.getValue().getCreateDate().format(formatter)
-                                                : ""
-                                )
-                        );
-
-                        updateDateColumn.setCellValueFactory(cellData ->
-                                new SimpleStringProperty(
-                                        cellData.getValue().getUpdateDate() != null
-                                                ? cellData.getValue().getUpdateDate().format(formatter)
-                                                : ""
-                                )
-                        );
-
-                        fullnameColumn.setMinWidth(200);
-                        genderColumn.setMinWidth(100);
-                        birthdayColumn.setMinWidth(150);
-                        mobileColumn.setMinWidth(150);
-                        cardIdColumn.setMinWidth(150);
-                        emailColumn.setMinWidth(200);
-                        addressColumn.setMinWidth(200);
-                        departmentNameColumn.setMinWidth(150);
-                        roleNameColumn.setMinWidth(150);
-                        statusColumn.setMinWidth(100);
-                        createDateColumn.setMinWidth(150);
-                        updateDateColumn.setMinWidth(150);
-                        scrollableTable.getColumns().addAll(fullnameColumn, genderColumn, birthdayColumn, mobileColumn, cardIdColumn,
-                                emailColumn, addressColumn, departmentNameColumn, roleNameColumn, statusColumn, createDateColumn,
-                                updateDateColumn);
-                        scrollableTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
-                        TableUtils.disableSorting(scrollableTable);
-                    }
-
-                    if (fixedLastTable.getColumns().isEmpty()) {
-                        TableColumn<EmployeeDT0, Void> actionColumn = new TableColumn<>("Hành động");
-
-                        // Tạo Callback để sử dụng cho setCellFactory
-                        Callback<TableColumn<EmployeeDT0, Void>, TableCell<EmployeeDT0, Void>> cellFactory = (TableColumn<EmployeeDT0, Void> param) -> {
-                            return new TableCell<>() {
-                                private final HBox actionBox = new HBox(10);
-                                {
-                                    actionBox.setAlignment(Pos.CENTER);
-                                    // Icon xem chi tiết
-                                    MFXFontIcon viewIcon = new MFXFontIcon("fas-eye", 18);
-                                    viewIcon.setStyle("-fx-cursor: hand;");
-                                    viewIcon.setColor(Color.FORESTGREEN);
-                                    viewIcon.setOnMouseClicked(event -> loadSceneAsync("/fxml/EmployeeDetail.fxml"));
-
-                                    // Icon chỉnh sửa
-                                    MFXFontIcon editIcon = new MFXFontIcon("fas-pen-to-square", 18);
-                                    editIcon.setStyle("-fx-cursor: hand;");
-                                    editIcon.setColor(Color.BLUE);
-                                    editIcon.setOnMouseClicked(event -> loadSceneAsync("/fxml/EditEmployee.fxml"));
-
-                                    // Icon xóa
-                                    MFXFontIcon deleteIcon = new MFXFontIcon("fas-trash-can", 18);
-                                    deleteIcon.setStyle("-fx-cursor: hand;");
-                                    deleteIcon.setColor(Color.RED);
-                                    deleteIcon.setOnMouseClicked(event -> {
-                                        Stage currentStage = (Stage) borderPane.getScene().getWindow();
-                                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                                        alert.initOwner(currentStage);
-                                        alert.initModality(Modality.WINDOW_MODAL);
-                                        alert.setTitle("Xác nhận xóa");
-                                        alert.setHeaderText("Bạn có chắc chắn muốn xóa người dùng này?");
-                                        alert.setContentText("Hành động này không thể hoàn tác.");
-
-                                        alert.showAndWait().ifPresent(response -> {
-                                            if (response == ButtonType.OK) {
-                                                System.out.println("Xóa nhân viên: " + getTableView().getItems().get(getIndex()).getFullname());
-                                            }
-                                        });
-                                    });
-
-                                    // Thêm các icon vào HBox
-                                    actionBox.getChildren().addAll(viewIcon, editIcon, deleteIcon);
-                                }
-
-                                @Override
-                                protected void updateItem(Void item, boolean empty) {
-                                    super.updateItem(item, empty);
-                                    if (empty) {
-                                        setGraphic(null); // Không hiển thị nếu cell rỗng
-                                    } else {
-                                        setGraphic(actionBox); // Hiển thị actionBox
-                                    }
-                                }
-                            };
-                        };
-
-                        actionColumn.setCellFactory(cellFactory);
-                        fixedLastTable.getColumns().add(actionColumn);
-                        fixedLastTable.setMinWidth(120);
-                        fixedLastTable.setMaxWidth(120);
-                        fixedLastTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-                        TableUtils.disableSorting(fixedLastTable);
-                    }
-                });
-                return null;
-            }
-        };
-
-        setupTask.setOnSucceeded(e -> Platform.runLater(() -> {
-            Label label = new Label("");
-            fixedFirstTable.setPlaceholder(label);
-            fixedLastTable.setPlaceholder(label);
-            Label placeholderLabel = new Label("Không có dữ liệu");
-            placeholderLabel.setStyle("-fx-text-fill: black;-fx-font-size: 16px");
-            scrollableTable.setPlaceholder(placeholderLabel);
-        }));
-
-        new Thread(setupTask).start();
+        Platform.runLater(() -> {
+            setupFixedFirstTable();
+            setupScrollableTable();
+            setupFixedLastTable();
+            setupTablePlaceholders();
+        });
     }
-    private void addEmployee() {
-        addEmployeeBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, event ->
-                loadSceneAsync("/fxml/AddEmployee.fxml"));
-    }
-    public class FXMLCache {
-        private static final Map<String, FXMLLoader> cache = new HashMap<>();
+    private void setupFixedFirstTable() {
+        if (!fixedFirstTable.getColumns().isEmpty()) return;
 
-        public static Parent get(String fxmlPath) throws IOException {
-            if (cache.containsKey(fxmlPath)) {
-                // Tạo FXMLLoader mới nhưng sử dụng controller đã cache
-                FXMLLoader newLoader = new FXMLLoader(cache.get(fxmlPath).getLocation());
-                return newLoader.load();
-            }
-            return null;
-        }
+        fixedFirstTable.setMinWidth(210);
 
-        public static void put(String fxmlPath, FXMLLoader loader) {
-            cache.put(fxmlPath, loader);
-        }
+        TableColumn<EmployeeDT0, String> idColumn = createColumn("ID",
+                employee -> new SimpleStringProperty(String.valueOf(employee.getID())));
+        TableColumn<EmployeeDT0, String> codeColumn = createColumn("Mã Nhân viên",
+                employee -> new SimpleStringProperty(employee.getEmployeeCode()));
 
-        public static boolean contains(String fxmlPath) {
-            return cache.containsKey(fxmlPath);
-        }
-
-        public static void clear() {
-            cache.clear();
-        }
+        codeColumn.setMinWidth(150);
+        fixedFirstTable.getColumns().addAll(idColumn, codeColumn);
+        fixedFirstTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        TableUtils.disableSorting(fixedFirstTable);
     }
 
-    private void loadSceneAsync(String fxmlPath) {
-        Task<Parent> loadTask = new Task<>() {
-            @Override
-            protected Parent call() throws IOException {
-                Parent parent;
-                if (FXMLCache.contains(fxmlPath)) {
-                    parent = FXMLCache.get(fxmlPath);
-                } else {
-                    FXMLLoader loader = new FXMLLoader();
-                    loader.setLocation(getClass().getResource(fxmlPath));
-                    loader.setControllerFactory(applicationContext::getBean);
-                    parent = loader.load();
-                    FXMLCache.put(fxmlPath, loader);
-                }
-                return parent;
-            }
-        };
+    private void setupScrollableTable() {
+        if (!scrollableTable.getColumns().isEmpty()) return;
 
-        loadTask.setOnSucceeded(e -> {
-            Parent parent = loadTask.getValue();
-            Platform.runLater(() -> {
+        List<TableColumn<EmployeeDT0, String>> columns = new ArrayList<>();
+
+        columns.add(createColumnWithWidth("Họ và Tên", e -> new SimpleStringProperty(e.getFullname()), 200));
+        columns.add(createColumnWithWidth("Giới tính", e -> new SimpleStringProperty(e.getGender()), 100));
+        columns.add(createColumnWithWidth("Ngày sinh", e -> new SimpleStringProperty(
+                e.getBirthday() != null ? e.getBirthday().format(DATE_FORMATTER) : ""), 150));
+        columns.add(createColumnWithWidth("Số điện thoại", e -> new SimpleStringProperty(e.getMobile()), 150));
+        columns.add(createColumnWithWidth("CMND/CCCD", e -> new SimpleStringProperty(e.getCardID()), 150));
+        columns.add(createColumnWithWidth("Email", e -> new SimpleStringProperty(e.getEmail()), 200));
+        columns.add(createColumnWithWidth("Địa chỉ", e -> new SimpleStringProperty(e.getAddress()), 200));
+        columns.add(createColumnWithWidth("Phòng ban", e -> new SimpleStringProperty(e.getDepartmentName()), 150));
+        columns.add(createColumnWithWidth("Chức vụ", e -> new SimpleStringProperty(e.getRoleName()), 150));
+        columns.add(createColumnWithWidth("Trạng thái", e -> new SimpleStringProperty(e.getStatus()), 100));
+        columns.add(createColumnWithWidth("Ngày tạo", e -> new SimpleStringProperty(
+                e.getCreateDate() != null ? e.getCreateDate().format(DATETIME_FORMATTER) : ""), 150));
+        columns.add(createColumnWithWidth("Ngày cập nhật", e -> new SimpleStringProperty(
+                e.getUpdateDate() != null ? e.getUpdateDate().format(DATETIME_FORMATTER) : ""), 150));
+
+        scrollableTable.getColumns().addAll(columns);
+        scrollableTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+        TableUtils.disableSorting(scrollableTable);
+    }
+
+    private void setupFixedLastTable() {
+        if (!fixedLastTable.getColumns().isEmpty()) return;
+
+        TableColumn<EmployeeDT0, Void> actionColumn = new TableColumn<>("Hành động");
+        actionColumn.setCellFactory(column -> new ActionTableCell());
+
+        fixedLastTable.getColumns().add(actionColumn);
+        fixedLastTable.setMinWidth(120);
+        fixedLastTable.setMaxWidth(120);
+        fixedLastTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        TableUtils.disableSorting(fixedLastTable);
+    }
+
+    private class ActionTableCell extends TableCell<EmployeeDT0, Void> {
+        private final HBox actionBox;
+
+        public ActionTableCell() {
+            actionBox = new HBox(10);
+            actionBox.setAlignment(Pos.CENTER);
+            setupActionIcons();
+        }
+
+        private void setupActionIcons() {
+            MFXFontIcon viewIcon = createActionIcon("fas-eye", Color.FORESTGREEN, this::handleViewAction);
+            MFXFontIcon editIcon = createActionIcon("fas-pen-to-square", Color.BLUE, this::handleEditAction);
+            MFXFontIcon deleteIcon = createActionIcon("fas-trash-can", Color.RED, this::handleDeleteAction);
+
+            actionBox.getChildren().addAll(viewIcon, editIcon, deleteIcon);
+        }
+
+        private MFXFontIcon createActionIcon(String iconCode, Color color, EventHandler<MouseEvent> handler) {
+            MFXFontIcon icon = new MFXFontIcon(iconCode, 18);
+            icon.setStyle("-fx-cursor: hand;");
+            icon.setColor(color);
+            icon.setOnMouseClicked(handler);
+            return icon;
+        }
+
+        private void handleViewAction(MouseEvent event) {
+            openDialog("/fxml/EmployeeDetail.fxml");
+            EmployeeDT0 employee = getTableView().getItems().get(getIndex());
+            Employee employeeCode = employeeRepository.findByEmployeecode(employee.getEmployeeCode());
+            EmployeeDetailController employeeDetailController = loader.getController();
+            employeeDetailController.handleView(employeeCode.getEmployeecode());
+        }
+
+        private void handleEditAction(MouseEvent event) {
+            openDialog("/fxml/EditEmployee.fxml");
+        }
+
+
+        private void handleDeleteAction(MouseEvent event) {
+            EmployeeDT0 employee = getTableView().getItems().get(getIndex());
+            showDeleteConfirmation(employee);
+        }
+
+        private void openDialog(String fxmlPath) {
+            try {
+                loader = new FXMLLoader(getClass().getResource(fxmlPath));
+                loader.setControllerFactory(applicationContext::getBean);
+                Parent parent = loader.load();
+
                 Stage stage = new Stage();
-                Scene scene = new Scene(parent);
-                stage.setScene(scene);
+                stage.setScene(new Scene(parent));
                 stage.initStyle(StageStyle.UTILITY);
                 stage.show();
+            } catch (IOException ex) {
+                Logger.getLogger(EditEmployeeController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        private void showDeleteConfirmation(EmployeeDT0 employee) {
+            Stage currentStage = (Stage) borderPane.getScene().getWindow();
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.initOwner(currentStage);
+            alert.initModality(Modality.WINDOW_MODAL);
+            alert.setTitle("Xác nhận xóa");
+            alert.setHeaderText("Bạn có chắc chắn muốn xóa người dùng này?");
+            alert.setContentText("Hành động này không thể hoàn tác.");
+
+            alert.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.OK) {
+                    deleteEmployee(employee);
+                }
             });
-        });
+        }
 
-        loadTask.setOnFailed(e -> {
-            Logger.getLogger(getClass().getName()).log(
-                    Level.SEVERE,
-                    "Error loading FXML",
-                    loadTask.getException()
-            );
-        });
+        private void deleteEmployee(EmployeeDT0 employee) {
+            Employee deleteByEmpCode = employeeRepository.findByEmployeecode(employee.getEmployeeCode());
+            employeeRepository.delete(deleteByEmpCode);
+            Platform.runLater(() -> {
+                initializeData();
+                setupPaginated();
+            });
+        }
 
-        new Thread(loadTask).start();
+        @Override
+        protected void updateItem(Void item, boolean empty) {
+            super.updateItem(item, empty);
+            setGraphic(empty ? null : actionBox);
+        }
     }
-    public void cleanup() {
-        fxmlCache.clear();
+
+    private TableColumn<EmployeeDT0, String> createColumn(String title,
+                                                          Function<EmployeeDT0, ObservableValue<String>> valueFactory) {
+        TableColumn<EmployeeDT0, String> column = new TableColumn<>(title);
+        column.setCellValueFactory(cellData -> valueFactory.apply(cellData.getValue()));
+        return column;
     }
 
+    private TableColumn<EmployeeDT0, String> createColumnWithWidth(String title,
+                                                                   Function<EmployeeDT0, ObservableValue<String>> valueFactory, double width) {
+        TableColumn<EmployeeDT0, String> column = createColumn(title, valueFactory);
+        column.setMinWidth(width);
+        return column;
+    }
+
+    private void setupTablePlaceholders() {
+        Label emptyLabel = new Label("");
+        Label noDataLabel = new Label("Không có dữ liệu");
+        noDataLabel.setStyle("-fx-text-fill: black;-fx-font-size: 16px");
+
+        fixedFirstTable.setPlaceholder(emptyLabel);
+        fixedLastTable.setPlaceholder(emptyLabel);
+        scrollableTable.setPlaceholder(noDataLabel);
+    }
+
+    private void addEmployee() {
+        loader = new FXMLLoader(getClass().getResource("/fxml/AddEmployee.fxml"));
+        loader.setControllerFactory(applicationContext::getBean);
+
+        try {
+            Parent parent = loader.load();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(parent));
+            stage.initStyle(StageStyle.UTILITY);
+            stage.show();
+
+            stage.setOnHidden(event -> {
+                initializeData();
+                setupPaginated();
+            });
+        } catch (IOException ex) {
+            Logger.getLogger(AddEmployeeController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }

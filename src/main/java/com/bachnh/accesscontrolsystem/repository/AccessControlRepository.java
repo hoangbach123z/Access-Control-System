@@ -1,4 +1,8 @@
 package com.bachnh.accesscontrolsystem.repository;
 
-public interface AccessControlRepository {
+import com.bachnh.accesscontrolsystem.entity.Accesscontrol;
+import org.springframework.aot.generate.AccessControl;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface AccessControlRepository extends JpaRepository<Accesscontrol, String> {
 }

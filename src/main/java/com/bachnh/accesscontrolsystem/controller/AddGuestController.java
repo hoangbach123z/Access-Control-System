@@ -2,6 +2,7 @@ package com.bachnh.accesscontrolsystem.controller;
 
 import com.bachnh.accesscontrolsystem.entity.Guest;
 import com.bachnh.accesscontrolsystem.repository.GuestRepository;
+import com.bachnh.accesscontrolsystem.service.IQRCodeService;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import javafx.fxml.FXML;
@@ -30,6 +31,8 @@ public class AddGuestController implements Initializable {
     MFXTextField txtPhoneNumber;
     @FXML
     MFXTextField txtEmail;
+    @Autowired
+    IQRCodeService iqrCodeService;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         saveBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> handleSave());
@@ -61,12 +64,14 @@ public class AddGuestController implements Initializable {
             return;
         }
         Guest data = new Guest();
+        String urlQrCode = iqrCodeService.generateQRCode(cardID);
         data.setCardId(cardID);
-        data.setGuestCode("G".concat(cardID));
+        data.setGuestCode(cardID);
         data.setGuestName(guestName);
         data.setMobile(phoneNumber);
         data.setEmail(email);
         data.setStatus("Đang hoạt động");
+        data.setUrlQrcode(urlQrCode);
         data.setCreateDate(LocalDateTime.now());
         guestRepository.save(data);
         Stage stage = (Stage) saveBtn.getScene().getWindow(); // Lấy Stage từ nút

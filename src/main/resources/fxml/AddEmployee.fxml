@@ -8,13 +8,13 @@
 <?import io.github.palexdev.mfxcore.controls.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="582.0" prefWidth="497.0" styleClass="anchor-background" stylesheets="@../css/Common.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bachnh.accesscontrolsystem.controller.AddEmployeeController">
+<AnchorPane fx:id="rootPane" prefHeight="582.0" prefWidth="497.0" styleClass="anchor-background" stylesheets="@../css/Common.css" xmlns="http://javafx.com/javafx/21.0.5" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bachnh.accesscontrolsystem.controller.AddEmployeeController">
    <children>
       <Label layoutX="14.0" layoutY="14.0" styleClass="header-label" text="Thêm nhân viên" />
       <Label layoutX="14.0" layoutY="72.0" styleClass="sub-header-label" text="Họ và tên" />
       <MFXTextField fx:id="txtEmpName" floatMode="DISABLED" layoutX="14.0" layoutY="101.0" prefHeight="38.0" prefWidth="215.0" promptText="Họ và tên" />
       <Label layoutX="14.0" layoutY="149.0" styleClass="sub-header-label" text="Ngày sinh" />
-      <MFXDatePicker fx:id="birthdayDatePicker" layoutX="14.0" layoutY="181.0" prefHeight="38.0" prefWidth="215.0" promptText="Ngày sinh" />
+      <MFXDatePicker fx:id="birthdayDatePicker" layoutX="14.0" layoutY="181.0" prefHeight="38.0" prefWidth="215.0" promptText="DD/MM/YYYY" />
       <Label layoutX="14.0" layoutY="232.0" prefHeight="18.0" prefWidth="164.0" styleClass="sub-header-label" text="CCCD/CMND/Hộ chiếu" />
       <MFXTextField fx:id="txtCardID" floatMode="DISABLED" layoutX="14.0" layoutY="261.0" prefHeight="38.0" prefWidth="215.0" promptText="CCCD/CMND/Hộ chiếu" />
       <Label layoutX="18.0" layoutY="315.0" styleClass="sub-header-label" text="Giới tính" />

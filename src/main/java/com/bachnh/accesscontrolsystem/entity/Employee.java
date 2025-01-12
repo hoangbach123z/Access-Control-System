@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
-import java.time.Instant;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -21,42 +21,54 @@ public class Employee {
     @Column(name = "pk_id", nullable = false)
     private UUID ID;
 
-    @Column(name = "c_employeecode",length = 255)
+    @Size(max = 255)
+    @Column(name = "c_employeecode")
     private String employeecode;
 
-    @Column(name = "c_fullname",length = 255)
+    @Size(max = 255)
+    @Column(name = "c_fullname")
     private String fullname;
 
+    @Size(max = 50)
     @Column(name = "c_gender", length = 50)
     private String gender;
 
     @Column(name = "c_birthday")
     private LocalDate birthday;
 
+    @Size(max = 50)
     @Column(name = "c_card_id", length = 50)
     private String cardId;
 
-    @Column(name = "c_mobie", length = 50)
+    @Size(max = 50)
+    @Column(name = "c_mobile", length = 50)
     private String mobile;
 
+    @Size(max = 100)
     @Column(name = "c_email", length = 100)
     private String email;
 
+    @Size(max = 100)
     @Column(name = "c_address", length = 100)
     private String address;
 
+    @Size(max = 255)
     @Column(name = "c_profile_image")
     private String urlProfileImage;
 
+    @Size(max = 255)
     @Column(name = "c_qr_code")
     private String urlQrCode;
 
-    @Column(name = "c_department_id")
-    private String departmentID;
+    @Size(max = 255)
+    @Column(name = "c_department_code")
+    private String departmentCode;
 
-    @Column(name = "c_role_id")
-    private String roleID;
+    @Size(max = 255)
+    @Column(name = "c_role_code")
+    private String roleCode;
 
+    @Size(max = 50)
     @Column(name = "c_status", length = 50)
     private String status;
 

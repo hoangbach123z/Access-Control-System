@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import io.github.palexdev.mfxcore.controls.Label?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
 
-<AnchorPane prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/21.0.5" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bachnh.accesscontrolsystem.controller.ScanQrController">
-
+<AnchorPane fx:id="scanQrContainer" prefHeight="600.0" prefWidth="934.0" styleClass="anchor-background" stylesheets="@../css/Common.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bachnh.accesscontrolsystem.controller.ScanQrController">
+   <children>
+      <ImageView fx:id="cameraView" fitHeight="480.0" fitWidth="640.0" layoutY="3.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="profileImage" fitHeight="204.0" fitWidth="200.0" layoutX="740.0" layoutY="39.0" pickOnBounds="true" preserveRatio="true" />
+      <Label fx:id="resultLabel" layoutX="140.0" layoutY="536.0">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+   </children>
 </AnchorPane>

@@ -1,14 +1,11 @@
 package com.bachnh.accesscontrolsystem.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
-import java.time.Instant;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -16,40 +13,49 @@ import java.util.UUID;
 @Setter
 @Entity
 @Table(name = "accesscontrols")
-public class AccessControl {
+public class Accesscontrol {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @ColumnDefault("gen_random_uuid()")
     @Column(name = "pk_id", nullable = false)
     private UUID id;
 
+    @Size(max = 255)
     @Column(name = "c_code")
-    private String cCode;
+    private String code;
 
+    @Size(max = 255)
     @Column(name = "c_full_name")
-    private String cFullName;
+    private String fullName;
 
+    @Size(max = 50)
+    @Column(name = "c_gender", length = 50)
+    private String gender;
+
+    @Size(max = 50)
     @Column(name = "c_card_id", length = 50)
-    private String cCardId;
+    private String cardId;
 
+    @Size(max = 255)
     @Column(name = "c_department_name")
-    private String cDepartmentName;
+    private String departmentName;
 
-
+    @Size(max = 255)
     @Column(name = "c_role_name")
-    private String cRoleName;
+    private String roleName;
 
-
+    @Size(max = 255)
     @Column(name = "c_type")
-    private String cType;
+    private String type;
 
-
+    @Size(max = 50)
     @Column(name = "c_status", length = 50)
-    private String cStatus;
+    private String status;
 
     @Column(name = "c_check_in")
-    private LocalDateTime cCheckIn;
+    private LocalDateTime checkIn;
 
     @Column(name = "c_check_out")
-    private LocalDateTime cCheckOut;
+    private LocalDateTime checkOut;
 
 }

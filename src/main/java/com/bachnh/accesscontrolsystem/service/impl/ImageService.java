@@ -4,9 +4,11 @@ import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 @Service
 public class ImageService {
@@ -31,7 +33,27 @@ public class ImageService {
          ImageIO.write(image, "png", filePath.toFile());
         return filePath.toString();
     }
+    public  String saveFileToStorage(String uploadDirectory, String fileName , File imageFile) throws IOException {
+        // Tạo tên file duy nhất
+        String FileName = fileName +"."+ getFileExtension(imageFile.getName());
 
+        // Đường dẫn thư mục lưu trữ
+        Path uploadPath = Path.of(uploadDirectory);
+
+        // Đường dẫn file đầy đủ
+        Path filePath = uploadPath.resolve(FileName);
+
+        // Tạo thư mục nếu chưa tồn tại
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        // Sao chép file vào thư mục lưu trữ
+        Files.copy(imageFile.toPath(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+        // Trả về tên file duy nhất
+        return filePath.toString();
+    }
     // Hàm hỗ trợ lấy phần mở rộng của file
     private String getFileExtension(String fileName) {
         int lastDotIndex = fileName.lastIndexOf('.');

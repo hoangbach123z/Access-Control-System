@@ -1,6 +1,8 @@
 package com.bachnh.accesscontrolsystem.controller;
 import com.bachnh.accesscontrolsystem.dto.AccessControlDTO;
-import com.bachnh.accesscontrolsystem.dto.AccessControlDTO;
+import com.bachnh.accesscontrolsystem.dto.GuestDTO;
+import com.bachnh.accesscontrolsystem.entity.Accesscontrol;
+import com.bachnh.accesscontrolsystem.repository.AccessControlRepository;
 import com.bachnh.accesscontrolsystem.utils.TableUtils;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXPagination;
@@ -23,13 +25,16 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.springframework.aot.generate.AccessControl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 @Component
@@ -52,7 +57,9 @@ public class AccessControlController implements Initializable {
     private FXMLLoader loader;
     private ObservableList<AccessControlDTO> masterData; // Danh sách dữ liệu gốc
     private final int ROWS_PER_PAGE = 30;
-    private final Map<Integer, ObservableList<AccessControlDTO>> pageCache = new HashMap<>();
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+    @Autowired private AccessControlRepository accessControlRepository;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -66,11 +73,29 @@ public class AccessControlController implements Initializable {
     }
 
     private void initializeData() {
-//        masterData = FXCollections.observableArrayList(
-//
-//
-//        );
-        setupTable(FXCollections.observableArrayList()); // Khởi tạo bảng trống
+        if (accessControlRepository == null) {
+            return;
+        }
+        List<Accesscontrol> accessControls = accessControlRepository.findAll();
+        AtomicInteger count = new AtomicInteger(1);
+        List<AccessControlDTO> data = accessControls.stream()
+                .map(accessControl -> new AccessControlDTO(
+                        count.getAndIncrement() ,
+                        accessControl.getCode() != null ? accessControl.getCode() : null,
+                        accessControl.getFullName() != null ? accessControl.getFullName() : null,
+                        accessControl.getGender() != null ? accessControl.getGender():null,
+                        accessControl.getCardId()!= null ? accessControl.getCardId():null,
+                        accessControl.getDepartmentName()!= null ? accessControl.getDepartmentName():null,
+                        accessControl.getRoleName()!= null ? accessControl.getRoleName():null,
+                        accessControl.getType()!= null ? accessControl.getType():null,
+                        accessControl.getStatus()!= null ? accessControl.getStatus():null,
+                        accessControl.getCheckIn()!= null ? accessControl.getCheckIn():null,
+                        accessControl.getCheckOut()!= null ? accessControl.getCheckOut():null
+
+                ))
+                .toList();
+        masterData = FXCollections.observableArrayList(data);
+        setupTable(masterData); // Khởi tạo bảng
 
     }
 
@@ -131,11 +156,11 @@ public class AccessControlController implements Initializable {
             fixedFirstTable.setMinWidth(210);
             TableColumn<AccessControlDTO, String> IDColumn = new TableColumn<>("ID");
             TableColumn<AccessControlDTO, String> codeColumn = new TableColumn<>("Mã Nhân viên");
-            IDColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getID()));
+            IDColumn.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getID())));
             codeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCode()));
             codeColumn.setMinWidth(150);
             fixedFirstTable.getColumns().addAll(IDColumn, codeColumn);
-            fixedFirstTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+            fixedFirstTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
             TableUtils.disableSorting(fixedFirstTable);
         }
 
@@ -155,8 +180,8 @@ public class AccessControlController implements Initializable {
             roleNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRoleName()));
             typeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRoleName()));
             statusColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStatus()));
-            checkInColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCheckIn()));
-            checkOutColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCheckOut()));
+            checkInColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCheckIn() != null ? cellData.getValue().getCheckIn().format(DATETIME_FORMATTER): ""));
+            checkOutColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCheckOut() != null ? cellData.getValue().getCheckOut().format(DATETIME_FORMATTER): ""));
 
             fullnameColumn.setMinWidth(200);
             genderColumn.setMinWidth(100);
@@ -169,7 +194,7 @@ public class AccessControlController implements Initializable {
 
             scrollableTable.getColumns().addAll(fullnameColumn, genderColumn,departmentNameColumn, roleNameColumn, statusColumn, checkInColumn,
                     checkOutColumn);
-            scrollableTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS);
+            scrollableTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
             TableUtils.disableSorting(scrollableTable);
         }
 
@@ -252,7 +277,7 @@ public class AccessControlController implements Initializable {
             fixedLastTable.getColumns().add(actionColumn);
             fixedLastTable.setMinWidth(120);
             fixedLastTable.setMaxWidth(120);
-            fixedLastTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+            fixedLastTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
 
             // Hiển thị khi bảng không có dữ liệu
             Label label = new Label("");

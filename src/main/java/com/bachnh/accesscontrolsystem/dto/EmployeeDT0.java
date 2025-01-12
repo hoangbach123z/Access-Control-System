@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@AllArgsConstructor
+
 public class EmployeeDT0 {
     private int ID;
 
@@ -29,9 +29,9 @@ public class EmployeeDT0 {
 
     private String address;
 
-    private String cProfileImage;
-
-    private String cQrCode;
+//    private String cProfileImage;
+//
+//    private String cQrCode;
 
     private String departmentName;
 
@@ -43,7 +43,7 @@ public class EmployeeDT0 {
 
     private LocalDateTime updateDate;
 
-    public EmployeeDT0(int ID, String employeeCode, String fullname, String gender, LocalDate birthday, String cardID, String mobile, String email, String address, String status, LocalDateTime createDate, LocalDateTime updateDate) {
+    public EmployeeDT0(int ID, String employeeCode, String fullname, String gender, LocalDate birthday, String cardID, String mobile, String email, String address,String departmentName,String roleName, String status, LocalDateTime createDate, LocalDateTime updateDate) {
         this.ID = ID;
         this.employeeCode = employeeCode;
         this.fullname = fullname;
@@ -53,6 +53,8 @@ public class EmployeeDT0 {
         this.mobile = mobile;
         this.email = email;
         this.address = address;
+        this.departmentName = departmentName;
+        this.roleName = roleName;
         this.status = status;
         this.createDate = createDate;
         this.updateDate = updateDate;

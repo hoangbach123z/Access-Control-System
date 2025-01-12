@@ -6,8 +6,11 @@ import com.bachnh.accesscontrolsystem.dto.request.QrCodeRequest;
 import com.bachnh.accesscontrolsystem.dto.response.DocRenderResponse;
 import com.bachnh.accesscontrolsystem.dto.response.QrCodeResponse;
 
+import java.io.File;
+
 public interface IQRCodeService {
-    ResponseData<DocRenderResponse>generateQRCode(QrCodeRequest request);
+    String generateQRCode(String employeeCode);
+    String saveProfileImage(String employeeCode , File selectedFiled);
     ResponseData<QrCodeResponse> readQRCode(QrCodeContent request);
 
 }

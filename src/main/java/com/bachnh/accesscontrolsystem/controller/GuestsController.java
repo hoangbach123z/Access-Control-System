@@ -1,27 +1,10 @@
 package com.bachnh.accesscontrolsystem.controller;
 import com.bachnh.accesscontrolsystem.dto.GuestDTO;
-import com.bachnh.accesscontrolsystem.dto.GuestDTO;
-import com.bachnh.accesscontrolsystem.dto.RoleDTO;
 import com.bachnh.accesscontrolsystem.entity.Guest;
-import com.bachnh.accesscontrolsystem.entity.Role;
-import com.bachnh.accesscontrolsystem.model.Device;
-import com.bachnh.accesscontrolsystem.model.Model;
-import com.bachnh.accesscontrolsystem.repository.DepartmentRepository;
 import com.bachnh.accesscontrolsystem.repository.GuestRepository;
 import com.bachnh.accesscontrolsystem.utils.TableUtils;
 import io.github.palexdev.materialfx.controls.MFXButton;
-import io.github.palexdev.materialfx.controls.MFXPaginatedTableView;
 import io.github.palexdev.materialfx.controls.MFXPagination;
-import io.github.palexdev.materialfx.controls.MFXTableColumn;
-import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
-import io.github.palexdev.materialfx.dialogs.MFXGenericDialog;
-import io.github.palexdev.materialfx.dialogs.MFXGenericDialogBuilder;
-import io.github.palexdev.materialfx.dialogs.MFXStageDialog;
-import io.github.palexdev.materialfx.enums.ScrimPriority;
-import io.github.palexdev.materialfx.filter.EnumFilter;
-import io.github.palexdev.materialfx.filter.IntegerFilter;
-import io.github.palexdev.materialfx.filter.StringFilter;
-import io.github.palexdev.materialfx.utils.others.observables.When;
 import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -36,7 +19,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
@@ -48,7 +30,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URL;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -70,8 +51,6 @@ public class GuestsController implements Initializable {
     private MFXButton addGuestBtn;
     @FXML
     private MFXPagination paginator;
-    @FXML
-//    private ScrollPane scrollPane;
     private FXMLLoader loader;
     private ObservableList<GuestDTO> masterData; // Danh sách dữ liệu gốc
     private final int ROWS_PER_PAGE = 30;
@@ -102,17 +81,17 @@ public class GuestsController implements Initializable {
         List<GuestDTO> data = guests.stream()
                 .map(guest -> new GuestDTO(
                         count.getAndIncrement() ,
-                        guest.getGuestCode() != null ? guest.getGuestCode() : null,
-                        guest.getGuestName() != null ? guest.getGuestName() : null,
-                        guest.getGender() != null ? guest.getGender():null,
-                        guest.getCardId()!= null ? guest.getCardId():null,
-                        guest.getBirthday()!= null ? guest.getBirthday():null,
-                        guest.getMobile()!= null ? guest.getMobile():null,
-                        guest.getEmail()!= null ? guest.getEmail():null,
-                        guest.getAddress()!= null ? guest.getAddress():null,
-                        guest.getStatus()!= null ? guest.getStatus():null,
-                        guest.getCreateDate()!= null ? guest.getCreateDate():null,
-                        guest.getUpdateDate()!= null ? guest.getUpdateDate():null
+                        guest.getGuestCode() ,
+                        guest.getGuestName(),
+                        guest.getGender() ,
+                        guest.getCardId(),
+                        guest.getBirthday(),
+                        guest.getMobile(),
+                        guest.getEmail(),
+                        guest.getAddress(),
+                        guest.getStatus(),
+                        guest.getCreateDate(),
+                        guest.getUpdateDate()
 
                 ))
                 .toList();

@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface DepartmentRepository extends JpaRepository<Department, String> {
     Department findByDepartmentCode(String departmentCode);
     Department deleteByDepartmentCode(String departmentCode);
+    Department findByDepartmentName(String departmentName);
 }

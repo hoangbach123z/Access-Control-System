@@ -135,7 +135,6 @@ public class DepartmentController implements Initializable {
         ObservableList<DepartmentDTO> pageData = FXCollections.observableArrayList(
                 masterData.subList(fromIndex, toIndex)
         );
-
         fixedFirstTable.getItems().clear();
         scrollableTable.getItems().clear();
         fixedLastTable.getItems().clear();
@@ -159,50 +158,32 @@ public class DepartmentController implements Initializable {
             fixedFirstTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
             TableUtils.disableSorting(fixedFirstTable);
         }
-
         if (scrollableTable.getColumns().isEmpty()) {
             TableColumn<DepartmentDTO, String> departmentNameColumn = new TableColumn<>("Phòng ban");
             TableColumn<DepartmentDTO, String> statusColumn = new TableColumn<>("Trạng thái");
             TableColumn<DepartmentDTO, String> createDateColumn = new TableColumn<>("Ngày tạo");
             TableColumn<DepartmentDTO, String> updateDateColumn = new TableColumn<>("Ngày cập nhật");
-
-
             departmentNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDepartmentName()));
             statusColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStatus()));
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-            createDateColumn.setCellValueFactory(cellData ->
-                    new SimpleStringProperty(
-                            cellData.getValue().getCreateDate() != null
+            createDateColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCreateDate() != null
                                     ? cellData.getValue().getCreateDate().format(formatter)
-                                    : ""
-                    )
-            );
-
-            updateDateColumn.setCellValueFactory(cellData ->
-                    new SimpleStringProperty(
-                            cellData.getValue().getUpdateDate() != null
+                                    : ""));
+            updateDateColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUpdateDate() != null
                                     ? cellData.getValue().getUpdateDate().format(formatter)
-                                    : ""
-                    )
-            );
-
-
+                                    : ""));
             departmentNameColumn.setMinWidth(150);
             statusColumn.setMinWidth(100);
             createDateColumn.setMinWidth(150);
             updateDateColumn.setMinWidth(150);
-
             scrollableTable.getColumns().addAll(departmentNameColumn, statusColumn, createDateColumn, updateDateColumn);
             scrollableTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
             TableUtils.disableSorting(scrollableTable);
-
         }
-
         if (fixedLastTable.getColumns().isEmpty()) {
             TableColumn<DepartmentDTO, Void> actionColumn = new TableColumn<>("Hành động");
             actionColumn.setCellFactory(param -> new TableCell<>() {
                 private final HBox actionBox = new HBox(10);
-
                 {
                     actionBox.setAlignment(Pos.CENTER);
                     MFXFontIcon viewIcon = new MFXFontIcon("fas-eye", 18);
@@ -222,7 +203,6 @@ public class DepartmentController implements Initializable {
                         stage.initStyle(StageStyle.UTILITY);
                         stage.show();
                     });
-
                     MFXFontIcon editIcon = new MFXFontIcon("fas-pen-to-square", 18);
                     editIcon.setStyle("-fx-cursor: hand;");
                     editIcon.setColor(Color.BLUE);
@@ -240,7 +220,6 @@ public class DepartmentController implements Initializable {
                         stage.initStyle(StageStyle.UTILITY);
                         stage.show();
                     });
-
                     MFXFontIcon deleteIcon = new MFXFontIcon("fas-trash-can", 18);
                     deleteIcon.setStyle("-fx-cursor: hand;");
                     deleteIcon.setColor(Color.RED);
@@ -252,10 +231,8 @@ public class DepartmentController implements Initializable {
                         alert.setTitle("Xác nhận xóa");
                         alert.setHeaderText("Bạn có chắc chắn muốn xóa người dùng này?");
                         alert.setContentText("Hành động này không thể hoàn tác.");
-
                         alert.showAndWait().ifPresent(response -> {
                             if (response == ButtonType.OK) {
-//                                System.out.println("Xóa nhân viên: " + getTableView().getItems().get(getIndex()).getDepartmentCode());
                                 Department deleteByDepartmentCode = departmentRepository.findByDepartmentCode(getTableView().getItems().get(getIndex()).getDepartmentCode());
                                 departmentRepository.delete(deleteByDepartmentCode);
                                 Platform.runLater(()-> {
@@ -267,7 +244,6 @@ public class DepartmentController implements Initializable {
                     });
                     actionBox.getChildren().addAll(viewIcon, editIcon, deleteIcon);
                 }
-
                 @Override
                 protected void updateItem(Void item, boolean empty) {
                     super.updateItem(item, empty);
@@ -279,12 +255,10 @@ public class DepartmentController implements Initializable {
                 }
 
             });
-
             fixedLastTable.getColumns().add(actionColumn);
             fixedLastTable.setMinWidth(120);
             fixedLastTable.setMaxWidth(120);
             fixedLastTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-
             // Hiển thị khi bảng không có dữ liệu
             Label label = new Label("");
             fixedFirstTable.setPlaceholder(label);
@@ -292,8 +266,6 @@ public class DepartmentController implements Initializable {
             Label placeholderLabel = new Label("Không có dữ liệu");
             placeholderLabel.setStyle("-fx-text-fill: black;-fx-font-size: 16px");
             scrollableTable.setPlaceholder(placeholderLabel);
-
-
             TableUtils.disableSorting(fixedLastTable);
         }
     }

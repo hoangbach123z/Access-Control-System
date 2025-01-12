@@ -12,8 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Setter
 @AllArgsConstructor
 public class AccessControlDTO {
-    private static final AtomicInteger count = new AtomicInteger(0);
-    private String ID;
+    private int ID;
 
     private String code;
 
@@ -31,20 +30,9 @@ public class AccessControlDTO {
 
     private String status;
 
-    private String checkIn;
+    private LocalDateTime checkIn;
 
-    private String checkOut;
+    private LocalDateTime checkOut;
 
-//    public AccessControlDTO(int id, String cCode, String cFullName, String cCardId, String cDepartmentName, String cRoleName, String cType, String cStatus, LocalDateTime cCheckIn, LocalDateTime cCheckOut) {
-//        this.id = count.incrementAndGet();
-//        this.cCode = cCode;
-//        this.cFullName = cFullName;
-//        this.cCardId = cCardId;
-//        this.cDepartmentName = cDepartmentName;
-//        this.cRoleName = cRoleName;
-//        this.cType = cType;
-//        this.cStatus = cStatus;
-//        this.cCheckIn = cCheckIn;
-//        this.cCheckOut = cCheckOut;
-//    }
+
 }

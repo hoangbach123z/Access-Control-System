@@ -19,7 +19,7 @@ public class Guest {
     @GeneratedValue(strategy = GenerationType.UUID)
     @ColumnDefault("gen_random_uuid()")
     @Column(name = "pk_id", nullable = false)
-    private UUID id;
+    private UUID ID;
 
     @Size(max = 255)
     @Column(name = "c_guest_code")
@@ -55,6 +55,9 @@ public class Guest {
     @Size(max = 50)
     @Column(name = "c_status", length = 50)
     private String status;
+
+    @Column(name = "c_url_qrcode", length = Integer.MAX_VALUE)
+    private String urlQrcode;
 
     @Column(name = "c_create_date")
     private LocalDateTime createDate;
