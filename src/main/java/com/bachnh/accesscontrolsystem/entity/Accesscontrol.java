@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.validation.constraints.Size;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -32,17 +33,17 @@ public class Accesscontrol {
     @Column(name = "c_gender", length = 50)
     private String gender;
 
-    @Size(max = 50)
-    @Column(name = "c_card_id", length = 50)
-    private String cardId;
+//    @Size(max = 50)
+//    @Column(name = "c_card_id", length = 50)
+//    private String cardId;
 
     @Size(max = 255)
-    @Column(name = "c_department_name")
-    private String departmentName;
+    @Column(name = "c_department_code")
+    private String departmentCode;
 
     @Size(max = 255)
-    @Column(name = "c_role_name")
-    private String roleName;
+    @Column(name = "c_role_code")
+    private String roleCode;
 
     @Size(max = 255)
     @Column(name = "c_type")
@@ -57,5 +58,8 @@ public class Accesscontrol {
 
     @Column(name = "c_check_out")
     private LocalDateTime checkOut;
+
+    @Column(name = "c_check_date")
+    private LocalDate checkDate;
 
 }

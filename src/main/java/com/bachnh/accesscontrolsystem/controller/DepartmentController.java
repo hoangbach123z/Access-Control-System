@@ -208,7 +208,7 @@ public class DepartmentController implements Initializable {
                     editIcon.setColor(Color.BLUE);
                     editIcon.setOnMouseClicked(event -> {
                         loader = new FXMLLoader();
-                        loader.setLocation(getClass().getResource("/fxml/EditEmployee.fxml"));
+                        loader.setLocation(getClass().getResource("/fxml/EditDepartment.fxml"));
                         try {
                             loader.load();
                         } catch (IOException ex) {

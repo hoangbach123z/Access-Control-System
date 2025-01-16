@@ -1,11 +1,16 @@
 package com.bachnh.accesscontrolsystem.controller;
 import com.bachnh.accesscontrolsystem.dto.AccessControlDTO;
-import com.bachnh.accesscontrolsystem.dto.GuestDTO;
-import com.bachnh.accesscontrolsystem.entity.Accesscontrol;
+import com.bachnh.accesscontrolsystem.model.AccessControlModel;
 import com.bachnh.accesscontrolsystem.repository.AccessControlRepository;
+import com.bachnh.accesscontrolsystem.repository.CommonAdapter;
 import com.bachnh.accesscontrolsystem.utils.TableUtils;
+import io.github.palexdev.materialfx.beans.NumberRange;
 import io.github.palexdev.materialfx.controls.MFXButton;
+import io.github.palexdev.materialfx.controls.MFXDatePicker;
 import io.github.palexdev.materialfx.controls.MFXPagination;
+import io.github.palexdev.materialfx.controls.MFXTextField;
+import io.github.palexdev.materialfx.utils.DateTimeUtils;
+import io.github.palexdev.materialfx.utils.others.dates.DateStringConverter;
 import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -25,13 +30,13 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.springframework.aot.generate.AccessControl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -56,15 +61,39 @@ public class AccessControlController implements Initializable {
     private MFXPagination paginator;
     @FXML
     private FXMLLoader loader;
+    @FXML
+    private MFXTextField txtCode;
+    @FXML
+    private MFXDatePicker dpFromDate;
+    @FXML
+    private MFXDatePicker dpToDate;
+    @FXML
+    private MFXButton btnSearch;
     private ObservableList<AccessControlDTO> masterData; // Danh sách dữ liệu gốc
     private final int ROWS_PER_PAGE = 30;
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
     @Autowired private AccessControlRepository accessControlRepository;
     @Autowired private ApplicationContext applicationContext;
+    @Autowired private CommonAdapter commonAdapter;
+    private Stage scanQrStage = null;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        dpFromDate.setConverterSupplier(() -> new DateStringConverter("dd/MM/yyyy", dpFromDate.getLocale()));
+        dpFromDate.setGridAlgorithm(DateTimeUtils::partialIntMonthMatrix);
+        dpFromDate.setYearsRange(NumberRange.of(2025));
+        dpToDate.setConverterSupplier(() -> new DateStringConverter("dd/MM/yyyy", dpToDate.getLocale()));
+        dpToDate.setGridAlgorithm(DateTimeUtils::partialIntMonthMatrix);
+        dpToDate.setYearsRange(NumberRange.of(2025));
+        if (dpFromDate.getValue() == null) {
+            dpFromDate.setValue(LocalDate.now());
+        }
+
+        if (dpToDate.getValue() == null) {
+            dpToDate.setValue(LocalDate.now());
+        }
         initializeData();
         setupPaginated();
         Platform.runLater(() -> {
@@ -72,21 +101,28 @@ public class AccessControlController implements Initializable {
             TableUtils.synchronizeTableSelection(fixedFirstTable, scrollableTable, fixedLastTable);
         });
         scanQrBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> openScanQR());
+        btnSearch.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            initializeData();
+            setupPaginated();
+        });
+
     }
 
-    private void initializeData() {
+    public void initializeData() {
         if (accessControlRepository == null) {
             return;
         }
-        List<Accesscontrol> accessControls = accessControlRepository.findAll();
+        String code = txtCode.getText();
+        String fromDate = dpFromDate.getText();
+        String toDate = dpToDate.getText();
+        List<AccessControlModel> accessControls = commonAdapter.getListAccessControlSystem(code,fromDate,toDate);
         AtomicInteger count = new AtomicInteger(1);
         List<AccessControlDTO> data = accessControls.stream()
                 .map(accessControl -> new AccessControlDTO(
                         count.getAndIncrement() ,
                         accessControl.getCode() != null ? accessControl.getCode() : null,
-                        accessControl.getFullName() != null ? accessControl.getFullName() : null,
+                        accessControl.getFullname() != null ? accessControl.getFullname() : null,
                         accessControl.getGender() != null ? accessControl.getGender():null,
-                        accessControl.getCardId()!= null ? accessControl.getCardId():null,
                         accessControl.getDepartmentName()!= null ? accessControl.getDepartmentName():null,
                         accessControl.getRoleName()!= null ? accessControl.getRoleName():null,
                         accessControl.getType()!= null ? accessControl.getType():null,
@@ -101,7 +137,7 @@ public class AccessControlController implements Initializable {
 
     }
 
-    private void setupPaginated() {
+    public void setupPaginated() {
         // Kiểm tra nếu masterData không tồn tại hoặc không có dữ liệu
         if (masterData == null || masterData.isEmpty()) {
             paginator.setMaxPage(1); // Đặt số trang tối thiểu là 1
@@ -170,7 +206,7 @@ public class AccessControlController implements Initializable {
             TableColumn<AccessControlDTO, String> fullnameColumn = new TableColumn<>("Họ và Tên");
             TableColumn<AccessControlDTO, String> genderColumn = new TableColumn<>("Giới tính");
             TableColumn<AccessControlDTO, String> departmentNameColumn = new TableColumn<>("Phòng ban");
-            TableColumn<AccessControlDTO, String> roleNameColumn = new TableColumn<>("Vị trí");
+            TableColumn<AccessControlDTO, String> roleNameColumn = new TableColumn<>("Chức vụ");
             TableColumn<AccessControlDTO, String> typeColumn = new TableColumn<>("Loại");
             TableColumn<AccessControlDTO, String> statusColumn = new TableColumn<>("Trạng thái");
             TableColumn<AccessControlDTO, String> checkInColumn = new TableColumn<>("Thời gian vào");
@@ -180,7 +216,7 @@ public class AccessControlController implements Initializable {
             genderColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getGender()));
             departmentNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDepartmentName()));
             roleNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRoleName()));
-            typeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRoleName()));
+            typeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getType()));
             statusColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStatus()));
             checkInColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCheckIn() != null ? cellData.getValue().getCheckIn().format(DATETIME_FORMATTER): ""));
             checkOutColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCheckOut() != null ? cellData.getValue().getCheckOut().format(DATETIME_FORMATTER): ""));
@@ -189,96 +225,25 @@ public class AccessControlController implements Initializable {
             genderColumn.setMinWidth(100);
             departmentNameColumn.setMinWidth(150);
             roleNameColumn.setMinWidth(150);
-            typeColumn.setMinWidth(150);
+            typeColumn.setMinWidth(200);
             statusColumn.setMinWidth(100);
-            checkInColumn.setMinWidth(150);
-            checkOutColumn.setMinWidth(150);
 
-            scrollableTable.getColumns().addAll(fullnameColumn, genderColumn,departmentNameColumn, roleNameColumn, statusColumn, checkInColumn,
-                    checkOutColumn);
+            scrollableTable.getColumns().addAll(fullnameColumn, genderColumn,departmentNameColumn, roleNameColumn,typeColumn, statusColumn);
             scrollableTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
             TableUtils.disableSorting(scrollableTable);
         }
 
         if (fixedLastTable.getColumns().isEmpty()) {
-            TableColumn<AccessControlDTO, Void> actionColumn = new TableColumn<>("Hành động");
-            actionColumn.setCellFactory(param -> new TableCell<>() {
-                private final HBox actionBox = new HBox(10);
+            fixedLastTable.setMinWidth(300);
+            TableColumn<AccessControlDTO, String> checkInColumn = new TableColumn<>("Thời gian vào");
+            TableColumn<AccessControlDTO, String> checkOutColumn = new TableColumn<>("Thời gian ra");
+            checkInColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCheckIn() != null ? cellData.getValue().getCheckIn().format(DATETIME_FORMATTER): ""));
+            checkOutColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCheckOut() != null ? cellData.getValue().getCheckOut().format(DATETIME_FORMATTER): ""));
+            checkInColumn.setMinWidth(150);
+            checkOutColumn.setMinWidth(150);
 
-                {
-                    actionBox.setAlignment(Pos.CENTER);
-                    MFXFontIcon viewIcon = new MFXFontIcon("fas-eye", 18);
-                    viewIcon.setStyle("-fx-cursor: hand;");
-                    viewIcon.setColor(Color.FORESTGREEN);
-                    viewIcon.setOnMouseClicked(event -> {
-                        loader = new FXMLLoader();
-                        loader.setLocation(getClass().getResource("/fxml/EmployeeDetail.fxml"));
-                        try {
-                            loader.load();
-                        } catch (IOException ex) {
-                            Logger.getLogger(EditEmployeeController.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                        Parent parent = loader.getRoot();
-                        Stage stage = new Stage();
-                        stage.setScene(new Scene(parent));
-                        stage.initStyle(StageStyle.UTILITY);
-                        stage.show();
-                    });
-
-                    MFXFontIcon editIcon = new MFXFontIcon("fas-pen-to-square", 18);
-                    editIcon.setStyle("-fx-cursor: hand;");
-                    editIcon.setColor(Color.BLUE);
-                    editIcon.setOnMouseClicked(event -> {
-                        loader = new FXMLLoader();
-                        loader.setLocation(getClass().getResource("/fxml/EditEmployee.fxml"));
-                        try {
-                            loader.load();
-                        } catch (IOException ex) {
-                            Logger.getLogger(EditEmployeeController.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                        Parent parent = loader.getRoot();
-                        Stage stage = new Stage();
-                        stage.setScene(new Scene(parent));
-                        stage.initStyle(StageStyle.UTILITY);
-                        stage.show();
-                    });
-
-                    MFXFontIcon deleteIcon = new MFXFontIcon("fas-trash-can", 18);
-                    deleteIcon.setStyle("-fx-cursor: hand;");
-                    deleteIcon.setColor(Color.RED);
-                    deleteIcon.setOnMouseClicked(event -> {
-                        Stage currentStage = (Stage) borderPane.getScene().getWindow();
-                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                        alert.initOwner(currentStage);
-                        alert.initModality(Modality.WINDOW_MODAL);
-                        alert.setTitle("Xác nhận xóa");
-                        alert.setHeaderText("Bạn có chắc chắn muốn xóa người dùng này?");
-                        alert.setContentText("Hành động này không thể hoàn tác.");
-
-                        alert.showAndWait().ifPresent(response -> {
-                            if (response == ButtonType.OK) {
-                                System.out.println("Xóa nhân viên: " + getTableView().getItems().get(getIndex()).getCode());
-                            }
-                        });
-                    });
-                    actionBox.getChildren().addAll(viewIcon, editIcon, deleteIcon);
-                }
-
-                @Override
-                protected void updateItem(Void item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty) {
-                        setGraphic(null);
-                    } else {
-                        setGraphic(actionBox);
-                    }
-                }
-
-            });
-
-            fixedLastTable.getColumns().add(actionColumn);
-            fixedLastTable.setMinWidth(120);
-            fixedLastTable.setMaxWidth(120);
+            fixedLastTable.getColumns().addAll(checkInColumn,
+                    checkOutColumn);
             fixedLastTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
             // Hiển thị khi bảng không có dữ liệu
@@ -293,19 +258,35 @@ public class AccessControlController implements Initializable {
 
     }
     private void openScanQR() {
+        // Kiểm tra nếu cửa sổ đã mở thì không mở lại
+        if (scanQrStage != null && scanQrStage.isShowing()) {
+            scanQrStage.requestFocus(); // Focus vào cửa sổ đã mở
+            return;
+        }
+
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/fxml/ScanQR.fxml"));
         loader.setControllerFactory(applicationContext::getBean);
         try {
             loader.load();
+            Parent parent = loader.getRoot();
+            scanQrStage = new Stage();
+            scanQrStage.setScene(new Scene(parent));
+            scanQrStage.initStyle(StageStyle.UTILITY);
+
+
+            scanQrStage.setOnHidden(event -> {
+                scanQrStage = null;  // Reset biến stage
+                Platform.runLater(() -> {
+                    initializeData();
+                    setupPaginated();
+                });
+            });
+
+            scanQrStage.show();
         } catch (IOException ex) {
             Logger.getLogger(AddEmployeeController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        Parent parent = loader.getRoot();
-        Stage stage = new Stage();
-        stage.setScene(new Scene(parent));
-        stage.initStyle(StageStyle.UTILITY);
-        stage.show();
     }
 
 }

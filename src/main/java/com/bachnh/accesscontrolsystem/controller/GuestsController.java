@@ -259,7 +259,7 @@ public class GuestsController implements Initializable {
                     editIcon.setColor(Color.BLUE);
                     editIcon.setOnMouseClicked(event -> {
                         loader = new FXMLLoader();
-                        loader.setLocation(getClass().getResource("/fxml/EditEmployee.fxml"));
+                        loader.setLocation(getClass().getResource("/fxml/EditGuest.fxml"));
                         try {
                             loader.load();
                         } catch (IOException ex) {

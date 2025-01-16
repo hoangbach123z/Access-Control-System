@@ -42,6 +42,8 @@ public class ScanQrController implements Initializable {
     private Label resultLabel;
     @Autowired
     IQRCodeService iqrCodeService;
+    @Autowired
+    private AccessControlController accessControlController;
     private volatile boolean running = true;
     private volatile String lastQRResult = "";
     private static final int SCAN_INTERVAL = 100;
@@ -224,16 +226,19 @@ public class ScanQrController implements Initializable {
             lastQRResult = "";
         }
     }
-
+//    public static String Success(){
+//        return "SUCCESS";
+//    }
     private void handleNewQRCode(String qrContent) {
-        String message = iqrCodeService.readQRCode(qrContent);
-        Platform.runLater(() -> {
-            resultLabel.setText("Kết quả: " + message);
-            // Có thể thêm thông báo về thời gian chờ
-//            new Timeline(new KeyFrame(Duration.millis(COOLDOWN_PERIOD), e -> {
-//                resultLabel.setText("Sẵn sàng quét mã QR tiếp theo...");
-//            })).play();
-        });
+        boolean isSuccess = iqrCodeService.readQRCode(qrContent);
+        if (accessControlController != null) {
+           if (isSuccess){
+               Platform.runLater(() -> {
+                   accessControlController.initializeData(); // Nạp lại dữ liệu
+                   accessControlController.setupPaginated(); // Cập nhật lại phân trang
+               });
+           }
+        }
         System.out.println(qrContent);
 
     }

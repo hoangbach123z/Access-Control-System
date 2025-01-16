@@ -1,92 +1,104 @@
-/*
- * Copyright (C) 2022 Parisi Alessandro
- * This file is part of MaterialFX (https://github.com/palexdev/MaterialFX).
- *
- * MaterialFX is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * MaterialFX is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with MaterialFX.  If not, see <http://www.gnu.org/licenses/>.
- */
+/*!**/
+/* * Copyright (C) 2022 Parisi Alessandro*/
+/* * This file is part of MaterialFX (https://github.com/palexdev/MaterialFX).*/
+/* **/
+/* * MaterialFX is free software: you can redistribute it and/or modify*/
+/* * it under the terms of the GNU Lesser General Public License as published by*/
+/* * the Free Software Foundation, either version 3 of the License, or*/
+/* * (at your option) any later version.*/
+/* **/
+/* * MaterialFX is distributed in the hope that it will be useful,*/
+/* * but WITHOUT ANY WARRANTY; without even the implied warranty of*/
+/* * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the*/
+/* * GNU Lesser General Public License for more details.*/
+/* **/
+/* * You should have received a copy of the GNU Lesser General Public License*/
+/* * along with MaterialFX.  If not, see <http://www.gnu.org/licenses/>.*/
+/* *!*/
 
-@import '../fonts/Fonts.css';
-@import 'MFXColors.css';
+/*@import '../fonts/Fonts.css';*/
+/*@import 'MFXColors.css';*/
 
-.header-label {
-	-fx-font-family: 'Nunito';
-	-fx-font-size: 18;
-	-fx-font-weight: bold;
-}
+/*.header-label {*/
+/*	-fx-font-family: 'Nunito';*/
+/*	-fx-font-size: 18;*/
+/*	-fx-font-weight: bold;*/
+/*}*/
 
-.header-label .text {
-	-fx-font-smoothing-type: lcd;
-}
+/*.header-label .text {*/
+/*	-fx-font-smoothing-type: lcd;*/
+/*}*/
+/*.header-label-filter {*/
+/*	-fx-font-family: 'Nunito';*/
+/*	-fx-font-size: 14;*/
+/*	-fx-font-weight: bold;*/
+/*}*/
+/*.header-label-filter .text {*/
+/*	-fx-font-smoothing-type: lcd;*/
+/*}*/
+/*.sub-header-label {*/
+/*	-fx-font-family: 'Nunito';*/
+/*	-fx-font-size: 14;*/
 
-.sub-header-label {
-	-fx-font-family: 'Nunito';
-	-fx-font-size: 14;
+/*}*/
 
-}
+/*.sub-header-label .text {*/
+/*	-fx-font-smoothing-type: lcd;*/
+/*}*/
 
-.sub-header-label .text {
-	-fx-font-smoothing-type: lcd;
-}
+/*.grid-pane {*/
+/*	-fx-background-color: transparent;*/
+/*}*/
 
-.grid-pane {
-	-fx-background-color: transparent;
-}
+/*.grid-background {*/
+/*	-fx-background-color: white;*/
+/*	-fx-background-radius: 10;*/
+/*	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.12, -1.0, 2.0);*/
+/*}*/
+/*.anchor-background {*/
+/*	-fx-background-color: white;*/
+/*	-fx-background-radius: 10;*/
+/*	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.12, -1.0, 2.0);*/
+/*}*/
+/*.custom-hbox {*/
+/*	-fx-background-color: white;*/
+/*	-fx-background-radius: 5;*/
+/*	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.12, -1.0, 2.0);*/
+/*}*/
+/*.cancel-button {*/
+/*	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.12, -1.0, 2.0);*/
 
-.grid-background {
-	-fx-background-color: white;
-	-fx-background-radius: 10;
-	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.12, -1.0, 2.0);
-}
-.anchor-background {
-	-fx-background-color: white;
-	-fx-background-radius: 10;
-	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.12, -1.0, 2.0);
-}
-.custom-hbox {
-	-fx-background-color: white;
-	-fx-background-radius: 5;
-	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.12, -1.0, 2.0);
-}
-.cancel-button {
-	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.12, -1.0, 2.0);
+/*}*/
+/*.save-button {*/
+/*	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.12, -1.0, 2.0);*/
+/*	-fx-background-color: #000000;*/
+/*}*/
+/*.save-button.button{*/
+/*	-fx-background-color: #0C969C;*/
+/*	-fx-text-fill: #ffffff;*/
+/*}*/
+/*.add-button {*/
+/*	-fx-background-color: #008001;*/
 
-}
-.save-button {
-	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.12, -1.0, 2.0);
-	-fx-background-color: #000000;
-}
-.save-button.button{
-	-fx-background-color: #0C969C;
-	-fx-text-fill: #ffffff;
-}
-.add-button {
-	-fx-background-color: #008001;
-
-}
-.add-button.button{
-	-fx-background-color: #008001;
-	-fx-font-family: Nunito;
-	-fx-text-fill: #ffffff;
-	-fx-font-weight: bold;
-	-fx-font-size: 13px;
-}
-.image-view-custom {
-	-fx-background-color: white;
-	-fx-background-radius: 10;
-	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.12, -1.0, 2.0);
-}
-/* Custom Table */
+/*}*/
+/*.add-button.button{*/
+/*	-fx-background-color: #008001;*/
+/*	-fx-font-family: Nunito;*/
+/*	-fx-text-fill: #ffffff;*/
+/*	-fx-font-weight: bold;*/
+/*	-fx-font-size: 13px;*/
+/*}*/
+/*.image-view-custom {*/
+/*	-fx-background-color: white;*/
+/*	-fx-background-radius: 10;*/
+/*	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.12, -1.0, 2.0);*/
+/*}*/
+/*.text-field-custom.mfx-text-field  {*/
+/*	-fx-text-fill: #333333;    !* Màu chữ *!*/
+/*	-fx-font-size: 16px;       !* Kích thước chữ *!*/
+/*	-fx-font-family: "Nunito"; !* Phông chữ *!*/
+/*	-fx-font-weight: bold;   !* Kiểu chữ *!*/
+/*}*/
 
 
 

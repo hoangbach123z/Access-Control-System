@@ -1,5 +1,6 @@
 package com.bachnh.accesscontrolsystem.repository;
 
+import com.bachnh.accesscontrolsystem.model.AccessControlModel;
 import com.bachnh.accesscontrolsystem.model.EmployeeModel;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceException;
@@ -72,4 +73,39 @@ public class CommonAdapter {
             throw new RuntimeException("Failed to get employees", e);
         }
     }
+
+    public List<AccessControlModel> getListAccessControlSystem(String code, String fromDate, String toDate) {
+        final String logPrefix = "Get Access Control";
+        log.info("{} ------ START ------", logPrefix);
+
+        try {
+//            String queryStr = "SELECT public.get_access_controls(:code, :fromDate, :toDate)";
+//            log.info("Executing query: {}", queryStr); // Log the query being executed
+            Query query = entityManager.createNativeQuery(
+                    "SELECT * FROM public.get_access_controls(:code, :fromDate, :toDate)",
+                    "AccessControlModelMapping"
+            );
+            query.setParameter("code", code);
+            query.setParameter("fromDate", fromDate);
+            query.setParameter("toDate", toDate);
+
+            List<?> resultList = query.getResultList();
+//            log.info("Query result: {}", resultList); // Log the results of the query
+            @SuppressWarnings("unchecked")
+            List<AccessControlModel> data = (List<AccessControlModel>) resultList;
+            log.info("{} - Successfully retrieved {} AccessControl", logPrefix, data.size());
+            log.info("{} ------ END ------", logPrefix);
+
+            return data;
+
+        } catch (PersistenceException pe) {
+            log.error("{} - Database error: {}", logPrefix, pe.getMessage(), pe);
+            throw new RuntimeException("Failed to Access Control from database", pe);
+        } catch (Exception e) {
+            log.error("{} - Unexpected error: {}", logPrefix, e.getMessage(), e);
+            throw new RuntimeException("Failed to Access Control", e);
+        }
+    }
 }
+
+

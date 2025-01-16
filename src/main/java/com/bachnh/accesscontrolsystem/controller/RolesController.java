@@ -238,7 +238,7 @@ public class RolesController implements Initializable {
                     editIcon.setColor(Color.BLUE);
                     editIcon.setOnMouseClicked(event -> {
                         loader = new FXMLLoader();
-                        loader.setLocation(getClass().getResource("/fxml/EditEmployee.fxml"));
+                        loader.setLocation(getClass().getResource("/fxml/EditRole.fxml"));
                         try {
                             loader.load();
                         } catch (IOException ex) {

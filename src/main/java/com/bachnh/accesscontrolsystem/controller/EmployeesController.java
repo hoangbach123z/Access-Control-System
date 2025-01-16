@@ -58,7 +58,6 @@ public class EmployeesController implements Initializable {
     @FXML private BorderPane borderPane;
     @FXML private MFXButton addEmployeeBtn;
     @FXML private MFXPagination paginator;
-
     private FXMLLoader loader;
     private ObservableList<EmployeeDT0> masterData;
 

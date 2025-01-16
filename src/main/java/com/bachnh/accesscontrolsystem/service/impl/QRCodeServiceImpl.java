@@ -1,8 +1,5 @@
 package com.bachnh.accesscontrolsystem.service.impl;
 
-import com.bachnh.accesscontrolsystem.data.ResponseData;
-import com.bachnh.accesscontrolsystem.dto.request.QrCodeContent;
-import com.bachnh.accesscontrolsystem.dto.response.QrCodeResponse;
 import com.bachnh.accesscontrolsystem.entity.Accesscontrol;
 import com.bachnh.accesscontrolsystem.entity.Employee;
 import com.bachnh.accesscontrolsystem.entity.Guest;
@@ -11,11 +8,9 @@ import com.bachnh.accesscontrolsystem.repository.EmployeeRepository;
 import com.bachnh.accesscontrolsystem.repository.GuestRepository;
 import com.bachnh.accesscontrolsystem.service.IQRCodeService;
 import com.google.zxing.*;
-import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.client.j2se.MatrixToImageConfig;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
-import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import org.slf4j.Logger;
@@ -25,15 +20,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
-import java.security.MessageDigest;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -149,8 +140,9 @@ public class QRCodeServiceImpl implements IQRCodeService {
         return objectUrl;
     };
     @Override
-    public String readQRCode(String content) {
+    public boolean readQRCode(String content) {
         String logPrefix = "Read QRCode Image";
+        String response = "";
         log.info(logPrefix + " ------ START ------");
         try {
             String code = aesService.decrypt(content,secretKey);
@@ -163,18 +155,19 @@ public class QRCodeServiceImpl implements IQRCodeService {
                     data.setCode(code);
                     data.setFullName(guest.getGuestName());
                     data.setGender(guest.getGender());
-                    data.setDepartmentName("");
-                    data.setRoleName("");
-                    data.setType(type);
+//                    data.setDepartmentName("");
+//                    data.setRoleName("");
+                    data.setType("GUEST");
                     data.setStatus("IN");
                     data.setCheckIn(LocalDateTime.now());
+                    data.setCheckDate(LocalDate.now());
                     accessControlRepository.save(data);
-                    return "SUCCCESS";
+                    return true;
                 }
                 guestCheckedIn.setCheckOut(LocalDateTime.now());
                 guestCheckedIn.setStatus("OUT");
                 accessControlRepository.save(guestCheckedIn);
-                return "SUCCCESS";
+                return true;
             }
 
             if (type.equals("EMPLOYEE")) {
@@ -185,24 +178,25 @@ public class QRCodeServiceImpl implements IQRCodeService {
                    data.setCode(code);
                    data.setFullName(employee.getFullname());
                    data.setGender(employee.getGender());
-                   data.setDepartmentName(employee.getDepartmentCode());
-                   data.setRoleName(employee.getRoleCode());
-                   data.setType(type);
+                   data.setDepartmentCode(employee.getDepartmentCode());
+                   data.setRoleCode(employee.getRoleCode());
+                   data.setType("EMPLOYEE");
                    data.setStatus("IN");
                    data.setCheckIn(LocalDateTime.now());
+                   data.setCheckDate(LocalDate.now());
                    accessControlRepository.save(data);
-                   return "SUCCCESS";
+                   return true;
                }
                empCheckedIn.setCheckOut(LocalDateTime.now());
                empCheckedIn.setStatus("OUT");
                accessControlRepository.save(empCheckedIn);
+                return true;
             }
 
         } catch (Exception e) {
             log.error("getContentFromQR exception {}", e.getMessage());
-//            throw  new BaseException(CommonErrorCode.INTERNAL_SERVER_ERROR);
         }
-        return null;
+        return false;
     }
 
 }

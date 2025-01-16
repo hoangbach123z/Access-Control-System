@@ -61,7 +61,7 @@ public class AddEmployeeController implements Initializable {
         birthdayDatePicker.setConverterSupplier(() -> new DateStringConverter("dd/MM/yyyy", birthdayDatePicker.getLocale()));
         birthdayDatePicker.setGridAlgorithm(DateTimeUtils::partialIntMonthMatrix);
 //        birthdayDatePicker.setText();
-        birthdayDatePicker.setYearsRange(NumberRange.of(1990, 2025));
+        birthdayDatePicker.setYearsRange(NumberRange.of(2025));
 
         // xử lý combobox phòng ban
         List<Department> departments = departmentRepository.findAll();
@@ -144,7 +144,7 @@ public class AddEmployeeController implements Initializable {
             gender = "Nam";
         }
         if (txtFemale.isSelected()) {
-            gender = "Nũ";
+            gender = "Nữ";
         }
         if (employeeName == null || employeeName.trim().isEmpty()) {
             msg.errorMessage("Họ và tên không được để trống");

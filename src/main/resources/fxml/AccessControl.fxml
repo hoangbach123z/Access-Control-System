@@ -1,31 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import io.github.palexdev.materialfx.controls.MFXButton?>
-<?import io.github.palexdev.materialfx.controls.MFXPaginatedTableView?>
+<?import io.github.palexdev.materialfx.controls.MFXDatePicker?>
+<?import io.github.palexdev.materialfx.controls.MFXPagination?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.geometry.Insets?>
-<?import io.github.palexdev.materialfx.controls.MFXPagination?>
-<BorderPane fx:id="borderPane" prefHeight="667.0" prefWidth="1026.0" xmlns="http://javafx.com/javafx/21.0.5" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bachnh.accesscontrolsystem.controller.AccessControlController">
-   <top>
-      <HBox alignment="CENTER_RIGHT" prefHeight="43.0" prefWidth="992.0" BorderPane.alignment="CENTER">
-         <children>
-            <MFXButton fx:id="scanQrBtn" prefHeight="41.0" prefWidth="105.0" style="-fx-background-color: #008001; -fx-text-fill: #ffffff;" text="Quét mã" HBox.hgrow="ALWAYS">
-               <graphic>
-                  <FontIcon iconColor="WHITE" iconLiteral="fas-camera" iconSize="16" />
-               </graphic>
-               <font>
-                  <Font name="System Bold" size="14.0" />
-               </font>
-            </MFXButton>
-         </children>
-      </HBox>
-   </top>
+
+<BorderPane fx:id="borderPane" prefHeight="667.0" prefWidth="1026.0" styleClass="anchor-background" stylesheets="@../css/Common.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bachnh.accesscontrolsystem.controller.AccessControlController">
    <center>
-      <HBox fx:id="tableContainer" style="-fx-background-color: #ffffff; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 5,0,0,0); -fx-background-radius: 5px;">
+      <HBox fx:id="tableContainer" styleClass="custom-hbox">
          <children>
             <TableView fx:id="fixedFirstTable" maxHeight="1.7976931348623157E308" maxWidth="210.0" minWidth="210.0" prefHeight="624.0" prefWidth="210.0" styleClass="column-header" stylesheets="@../css/TableView.css">
                <columnResizePolicy>
@@ -35,7 +25,7 @@
                   <Insets bottom="12.0" />
                </HBox.margin>
             </TableView>
-            <TableView id="scrollableTable" fx:id="scrollableTable" layoutX="10.0" layoutY="10.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="624.0" prefWidth="678.0" styleClass="column-header" stylesheets="@../css/TableView.css" HBox.hgrow="ALWAYS">
+            <TableView id="scrollableTable" fx:id="scrollableTable" layoutX="10.0" layoutY="10.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="508.0" prefWidth="696.0" styleClass="column-header" stylesheets="@../css/TableView.css" HBox.hgrow="ALWAYS">
                <columnResizePolicy>
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                </columnResizePolicy>
@@ -58,4 +48,39 @@
          </children>
       </HBox>
    </bottom>
+   <top>
+      <BorderPane stylesheets="@../css/Common.css" BorderPane.alignment="CENTER">
+         <bottom>
+            <AnchorPane prefHeight="45.0" prefWidth="1026.0" BorderPane.alignment="CENTER">
+               <children>
+                  <MFXTextField fx:id="txtCode" floatMode="DISABLED" layoutX="138.0" layoutY="5.0" prefHeight="38.0" prefWidth="215.0" promptText="Mã định danh" />
+                  <MFXDatePicker fx:id="dpFromDate" layoutX="413.0" layoutY="5.0" prefWidth="150.0" />
+                  <MFXDatePicker fx:id="dpToDate" layoutX="660.0" layoutY="5.0" prefWidth="150.0" />
+                  <Label layoutX="43.0" layoutY="15.0" styleClass="fi" text="Mã định danh" />
+                  <Label layoutX="362.0" layoutY="15.0" text="Từ ngày" />
+                  <Label layoutX="591.0" layoutY="15.0" text="Đến ngày" />
+                  <MFXButton fx:id="btnSearch" layoutX="822.0" layoutY="10.0" text="Tìm kiếm">
+                     <graphic>
+                        <FontIcon iconLiteral="fas-search" />
+                     </graphic>
+                  </MFXButton>
+               </children>
+            </AnchorPane>
+         </bottom>
+         <center>
+            <AnchorPane prefHeight="45.0" prefWidth="1026.0" BorderPane.alignment="CENTER">
+               <children>
+                  <MFXButton fx:id="scanQrBtn" layoutX="921.0" layoutY="2.0" prefHeight="41.0" prefWidth="105.0" styleClass="add-button" text="Quét mã" AnchorPane.rightAnchor="4.0">
+                     <graphic>
+                        <FontIcon iconColor="WHITE" iconLiteral="fas-camera" iconSize="16" />
+                     </graphic>
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </MFXButton>
+               </children>
+            </AnchorPane>
+         </center>
+      </BorderPane>
+   </top>
 </BorderPane>

@@ -18,7 +18,7 @@ import java.util.UUID;
 @Table(name = "departments")
 public class Department {
     @Id
-//    @ColumnDefault("gen_random_uuid()")
+    @ColumnDefault("gen_random_uuid()")
     @Column(name = "department_id", nullable = false)
     private UUID ID;
 

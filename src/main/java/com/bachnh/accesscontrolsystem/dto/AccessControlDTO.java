@@ -20,7 +20,7 @@ public class AccessControlDTO {
 
     private String gender;
 
-    private String cardID;
+//    private String cardID;
 
     private String departmentName;
 
